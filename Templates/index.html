@@ -1,11 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Templates</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Form</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
 </head>
 <body>
-    <h1>{{ text }}</h1>
+
+  <nav>
+    <div class="logo">
+      <img src="https://via.placeholder.com/40" alt="Logo" style="vertical-align: middle; border-radius: 50%;">
+      MyCVSite
+    </div>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/generate-cv" class="generate-btn">Generate CV</a>
+    </div>
+  </nav>
+
+  <form action="/generate-cv" method="POST">
+    <h2>CV Input Form</h2>
+
+    <h3>Personal Information</h3>
+    <label>Full Name:</label>
+    <input type="text" name="name" required>
+
+    <label>Email:</label>
+    <input type="email" name="email" required>
+
+    <label>Phone:</label>
+    <input type="text" name="phone" required>
+
+    <label>Address:</label>
+    <textarea name="address" rows="2" required></textarea>
+
+    <label>LinkedIn Profile:</label>
+    <input type="url" name="linkedin">
+
+    <label>Profile Summary:</label>
+    <textarea name="summary" rows="4"></textarea>
+
+    <h3>Education</h3>
+    <label>Degree:</label>
+    <input type="text" name="degree">
+
+    <label>Institution:</label>
+    <input type="text" name="institution">
+
+    <label>Year of Graduation:</label>
+    <input type="text" name="grad_year">
+
+    <h3>Experience</h3>
+    <label>Company:</label>
+    <input type="text" name="company">
+
+    <label>Job Title:</label>
+    <input type="text" name="job_title">
+
+    <label>Duration:</label>
+    <input type="text" name="duration">
+
+    <label>Responsibilities:</label>
+    <textarea name="responsibilities" rows="3"></textarea>
+
+    <h3>Skills</h3>
+    <label>List your skills (comma separated):</label>
+    <textarea name="skills" rows="3"></textarea>
+
+    <h3>Projects</h3>
+    <label>Project Title:</label>
+    <input type="text" name="project_title">
+
+    <label>Description:</label>
+    <textarea name="project_desc" rows="3"></textarea>
+
+    <button type="submit">Generate CV</button>
+  </form>
+
 </body>
 </html>
