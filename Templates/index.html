@@ -19,53 +19,50 @@
       <a href="/form" class="generate-btn">Generate CV</a>
     </div>
   </nav>
-
-
 <div class="slider">
-    <div class="slides">
-
-        <!-- 5 Images -->
-        <img src="https://picsum.photos/id/1015/800/400" class="slide" />
-        <img src="https://picsum.photos/id/1025/800/400" class="slide" />
-        <img src="https://picsum.photos/id/1035/800/400" class="slide" />
-        <img src="https://picsum.photos/id/1045/800/400" class="slide" />
-        <img src="https://picsum.photos/id/1055/800/400" class="slide" />
-
+    <div class="btn">
+      <button class="prev" onclick="Decrease()">❮</button>
     </div>
 
-    <!-- Buttons -->
-    <button class="prev">❮</button>
-    <button class="next">❯</button>
+    <div class="btn">
+      <button class="next" onclick="Increase()">❯</button>
+    </div>
 </div>
 
-  <script>
-    let index = 0;
-    const slides = document.querySelector(".slides");
-    const totalSlides = document.querySelectorAll(".slide").length;
+<script>
+    const images = [
+        "/static/images/slider1.jpg",
+        "/static/images/slider2.jpg",
+        "/static/images/slider3.jpg",
+        "/static/images/slider4.jpg",
+        "/static/images/slider5.jpg"
+    ];
+    
+    let imgTag = document.querySelector('.slider');
+    let i = 0;
 
-    // Next slide
-    document.querySelector(".next").addEventListener("click", () => {
-        index = (index + 1) % totalSlides;
-        updateSlide();
-    });
-
-    // Previous slide
-    document.querySelector(".prev").addEventListener("click", () => {
-        index = (index - 1 + totalSlides) % totalSlides;
-        updateSlide();
-    });
-
-    // Update slide position
-    function updateSlide() {
-        slides.style.transform = `translateX(${-index * 100}%)`;
+    function Increase() {
+        i++;
+        slider();
     }
 
-    // Auto-play every 3 seconds
-    setInterval(() => {
-        index = (index + 1) % totalSlides;
-        updateSlide();
-    }, 3000);
+    function Decrease() {
+        i--;
+        slider();
+    }
 
-  </script>
+    function slider() {
+        if (i >= images.length) {
+            i = 0;
+        } 
+        if (i < 0) {
+            i = images.length - 1;
+        }
+
+        imgTag.style.backgroundImage = `url('${images[i]}')`;
+    }
+
+    setInterval(Increase, 5000);
+</script>
 </body>
 </html>
