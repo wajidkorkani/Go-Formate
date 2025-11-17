@@ -1,8 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>CV Form</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='form.css') }}">
 </head>
@@ -19,40 +19,54 @@
     </div>
   </nav>
 
-  <!-- Note enctype required for file upload -->
-  <form class="cv-form" action="/generate-pdf" method="post" enctype="multipart/form-data">
-    <h2>CV Information Form</h2>
+  <main class="container">
 
-    <label for="name">Full Name</label>
-    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+    <form action="/generate-pdf" method="post" enctype="multipart/form-data" class="cv-form">
 
-    <label for="age">Age</label>
-    <input type="text" id="age" name="age" placeholder="Enter your age" required>
+      <h2>CV Information</h2>
 
-    <label for="city">City</label>
-    <input type="text" id="city" name="city" placeholder="Enter your city" required>
+      <input type="text" name="name" placeholder="Full Name" required>
 
-    <label for="phone">Phone</label>
-    <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+      <input type="text" name="title" placeholder="Job Title (e.g. Software Engineer)" required>
 
-    <label for="email">Email</label>
-    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+      <input type="file" name="photo" accept="image/*">
 
-    <label>Skills</label>
-    <input type="text" name="skill1" placeholder="Skill 1" required>
-    <input type="text" name="skill2" placeholder="Skill 2" required>
-    <input type="text" name="skill3" placeholder="Skill 3" required>
+      <textarea name="profile_text" rows="4" placeholder="Profile Summary (Short paragraph about yourself)"></textarea>
 
-    <label for="education">Education</label>
-    <input type="text" id="education" name="education" placeholder="Enter your highest education" required>
+      <textarea name="experiences" rows="8"
+        placeholder="WORK EXPERIENCE (Format Example):
 
-    <label for="about">About Yourself</label>
-    <textarea id="about" name="about" placeholder="Write something about yourself..." required></textarea>
+Senior Software Developer
+Company – Jan 2022 - Dec 2023
+- Led a team of engineers
+- Developed and maintained backend systems
 
-    <label for="profile">Profile Photo (upload)</label>
-    <input type="file" id="profile" name="profile" accept="image/*">
+Web Developer
+Company – Jan 2021 - Dec 2021
+- Built frontend UI
+- Improved website performance"></textarea>
 
-    <button type="submit">Submit</button>
-  </form>
+      <textarea name="education" rows="4"
+        placeholder="Education (One per line):
+Masters in Software Engineering - XYZ University (2019-2020)
+BSc Computer Science - XYZ University (2015-2018)"></textarea>
+
+      <input type="text" name="skills" placeholder="Skills (comma separated, e.g. Python, Java, SQL)">
+
+      <input type="text" name="languages" placeholder="Languages (comma separated, e.g. English, Urdu)">
+
+      <input type="text" name="hobbies" placeholder="Hobbies (comma separated, e.g. Writing, Cricket, Music)">
+
+      <input type="text" name="phone" placeholder="Phone Number">
+
+      <input type="email" name="email" placeholder="Email Address">
+
+      <input type="text" name="address" placeholder="Full Address">
+
+      <button type="submit" class="submit">Generate</button>
+
+    </form>
+
+  </main>
 </body>
 </html>
