@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template as render, send_file, redirect, url_for
+from flask import Flask, request, render_template as render, send_file, redirect, url_for, flash
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.colors import HexColor, black, white
@@ -10,8 +10,11 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 from fpdf import FPDF
 import os
+import zipfile
+from pdf2image import convert_from_path
 
 app = Flask(__name__)
+app.secret_key = 'super_secret_key_for_flash'
 
 def make_circular_image(file_stream, size_px):
     """Crops an image into a circle, resizes it, and returns a ReportLab ImageReader."""
@@ -313,7 +316,7 @@ UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Define allowed extensions
-ALLOWED_EXTENSIONS = {'jpg', 'jpeg'}
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'pdf', 'docx'}
 
 def allowed_file(filename):
     """Checks if the file extension is allowed."""
@@ -388,7 +391,110 @@ def jpgToPdf():
                 )
             else:
                 return "Error during conversion.", 500
+
+
+def allowed_file(filename):
+    """Checks if the file extension is allowed."""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# --- Conversion & Zipping Logic ---
+
+def convert_pdf_to_jpg_and_zip(pdf_path, temp_dir, zip_filepath):
+    """
+    Converts all pages of a PDF to JPGs and zips them.
+
+    :param pdf_path: Path to the input PDF.
+    :param temp_dir: Temporary directory to save the individual JPGs.
+    :param zip_filepath: Path where the final zip file will be saved.
+    :returns: True on success, False on failure.
+    """
+    try:
+        # 1. Convert PDF pages to a list of Pillow Image objects
+        # Using 200 DPI for a good balance of quality and file size
+        images = convert_from_path(pdf_path, dpi=200)
+
+        # 2. Prepare for zipping
+        base_filename = os.path.splitext(os.path.basename(pdf_path))[0]
         
+        with zipfile.ZipFile(zip_filepath, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            # 3. Iterate, save each image, and add it to the zip file
+            for i, image in enumerate(images):
+                output_filename = f"{base_filename}_page_{i + 1}.jpg"
+                output_filepath = os.path.join(temp_dir, output_filename)
+                
+                # Save the image (quality=90 for high quality JPEG)
+                image.save(output_filepath, 'JPEG', quality=90)
+                
+                # Add the saved JPG to the zip file
+                zipf.write(output_filepath, arcname=output_filename)
+                
+                # Clean up the individual JPG file immediately
+                os.remove(output_filepath)
+        
+        return True
+    
+    except Exception as e:
+        print(f"Conversion or Zipping error: {e}")
+        # A common error is Poppler not being found.
+        if "No such file or directory" in str(e):
+            flash("❌ Conversion Failed! Poppler utility might not be installed or configured correctly.", "error")
+        else:
+            flash(f"❌ Conversion failed due to an unexpected error: {e}", "error")
+        return False
+
+
+
+@app.route("/pdf-to-jpg")
+def pdf_to_jpg():
+    return render("pdf_to_jpg.html")
+
+@app.route('/pdf-jpg', methods=['GET', 'POST'])
+def convert_pdf():
+    if request.method == 'POST':
+        # Check if file exists in request
+        if 'file' not in request.files:
+            flash("No file part in the request.", "error")
+            return redirect(request.url)
+        
+        file = request.files['file']
+        
+        if file.filename == '':
+            flash("No selected file.", "error")
+            return redirect(request.url)
+        
+        if file and allowed_file(file.filename):
+            # 1. Securely save the uploaded PDF
+            filename = secure_filename(file.filename)
+            pdf_filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(pdf_filepath)
+            
+            # 2. Define output paths
+            base_filename = os.path.splitext(filename)[0]
+            zip_filename = f"{base_filename}_images.zip"
+            zip_filepath = os.path.join(app.config['UPLOAD_FOLDER'], zip_filename)
+            
+            # 3. Perform the conversion and zipping
+            if convert_pdf_to_jpg_and_zip(pdf_filepath, app.config['UPLOAD_FOLDER'], zip_filepath):
+                # 4. Clean up the uploaded PDF file
+                os.remove(pdf_filepath)
+                
+                # 5. Send the zipped JPGs for download
+                return send_file(
+                    zip_filepath,
+                    mimetype='application/zip',
+                    as_attachment=True,
+                    download_name=zip_filename
+                )
+            else:
+                # If conversion failed, clean up the uploaded file and redirect
+                if os.path.exists(pdf_filepath):
+                    os.remove(pdf_filepath)
+                return redirect(url_for('pdf_to_jpg'))
+
+
+
+
 
 if __name__ == '__main__':
     # Clean up the uploads folder on server start (optional but recommended)
