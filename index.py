@@ -347,10 +347,13 @@ def convert_jpg_to_pdf(jpg_path, pdf_path):
         print(f"Conversion error: {e}")
         return False
 
-# --- Flask Routes ---
 
-@app.route('/jpg-to-pdf', methods=['POST'])
+@app.route('/jpg-to-pdf')
 def jpg_to_pdf():
+    return render('jpg_to_pdf.html')
+
+@app.route('/jpgtopdf', methods=['POST'])
+def jpgToPdf():
     if request.method == 'POST':
         # Check if the post request has the file part
         if 'file' not in request.files:
@@ -386,8 +389,6 @@ def jpg_to_pdf():
             else:
                 return "Error during conversion.", 500
         
-    # For GET request or failed POST request, render the upload form
-    return render_template('jpg_to_pdf.html')
 
 if __name__ == '__main__':
     # Clean up the uploads folder on server start (optional but recommended)
