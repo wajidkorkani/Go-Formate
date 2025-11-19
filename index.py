@@ -6,6 +6,10 @@ from reportlab.lib.utils import ImageReader
 from io import BytesIO
 from PIL import Image, ImageDraw
 from textwrap import wrap
+from werkzeug.utils import secure_filename
+from PIL import Image
+from fpdf import FPDF
+import os
 
 app = Flask(__name__)
 
@@ -303,5 +307,91 @@ def generate_pdf():
                      download_name=f"{name.replace(' ', '_')}_Resume.pdf",
                      mimetype="application/pdf")
 
-if __name__ == "__main__":
+
+# Set a safe directory for uploads
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# Define allowed extensions
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg'}
+
+def allowed_file(filename):
+    """Checks if the file extension is allowed."""
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# --- Conversion Logic ---
+
+def convert_jpg_to_pdf(jpg_path, pdf_path):
+    """
+    Converts a single JPG image to a PDF file using Pillow and fpdf2, 
+    matching the PDF page size to the image size.
+    """
+    try:
+        # 1. Open the image
+        img = Image.open(jpg_path)
+        width_px, height_px = img.size
+
+        # 2. Initialize PDF object with custom size (in points, 1pt = 1/72 inch)
+        pdf = FPDF(unit='pt', format=[width_px, height_px]) 
+        pdf.add_page()
+        
+        # 3. Add the image to the PDF, covering the entire page
+        # w and h are set to the full page dimensions (width_px, height_px)
+        pdf.image(jpg_path, x=0, y=0, w=width_px, h=height_px)
+
+        # 4. Output the PDF file
+        pdf.output(pdf_path)
+        return True
+    except Exception as e:
+        print(f"Conversion error: {e}")
+        return False
+
+# --- Flask Routes ---
+
+@app.route('/jpg-to-pdf', methods=['POST'])
+def jpg_to_pdf():
+    if request.method == 'POST':
+        # Check if the post request has the file part
+        if 'file' not in request.files:
+            return redirect(request.url)
+        
+        file = request.files['file']
+        
+        # If user does not select file, browser also submits an empty part
+        if file.filename == '':
+            return redirect(request.url)
+        
+        if file and allowed_file(file.filename):
+            # 1. Securely save the uploaded file
+            filename = secure_filename(file.filename)
+            jpg_filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(jpg_filepath)
+            
+            # 2. Define the output PDF filename and path
+            # e.g., 'myimage.jpg' -> 'myimage.pdf'
+            base_filename = os.path.splitext(filename)[0]
+            pdf_filename = f"{base_filename}.pdf"
+            pdf_filepath = os.path.join(app.config['UPLOAD_FOLDER'], pdf_filename)
+            
+            # 3. Perform the conversion
+            if convert_jpg_to_pdf(jpg_filepath, pdf_filepath):
+                # 4. Send the converted PDF for download
+                return send_file(
+                    pdf_filepath,
+                    mimetype='application/pdf',
+                    as_attachment=True,
+                    download_name=pdf_filename
+                )
+            else:
+                return "Error during conversion.", 500
+        
+    # For GET request or failed POST request, render the upload form
+    return render_template('jpg_to_pdf.html')
+
+if __name__ == '__main__':
+    # Clean up the uploads folder on server start (optional but recommended)
+    for f in os.listdir(UPLOAD_FOLDER):
+        os.remove(os.path.join(UPLOAD_FOLDER, f))
+        
     app.run(debug=True)
