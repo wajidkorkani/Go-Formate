@@ -12,6 +12,9 @@ from fpdf import FPDF
 import os
 import zipfile
 from pdf2image import convert_from_path
+from werkzeug.utils import secure_filename
+# from pdf2docx import Converter # New Import for DOCX conversion
+from io import BytesIO
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_for_flash'
@@ -493,8 +496,76 @@ def convert_pdf():
                 return redirect(url_for('pdf_to_jpg'))
 
 
+# def convert_pdf_to_docx(pdf_filepath, docx_buffer):
+#     """
+#     Converts a PDF file to a DOCX file and writes the result to a BytesIO buffer.
+    
+#     :param pdf_filepath: Path to the input PDF file.
+#     :param docx_buffer: BytesIO buffer to store the output DOCX data.
+#     :returns: True on success, False on failure.
+#     """
+#     try:
+#         cv = Converter(pdf_filepath)
+#         # Convert the PDF and write the output directly to the buffer.
+#         # This prevents saving a large file to the disk before sending it.
+#         cv.convert(docx_buffer)
+#         cv.close()
+#         docx_buffer.seek(0)
+#         return True
+#     except Exception as e:
+#         print(f"PDF to DOCX conversion error: {e}")
+#         flash(f"❌ Conversion failed! Error: {e}", "error")
+#         return False
 
+@app.route('/pdf-to-docx', methods=['GET', 'POST'])
+def pdf_to_docx():
+    """Handles the PDF to DOCX conversion form submission."""
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash("No file part in the request.", "error")
+            return redirect(request.url)
+        
+        file = request.files['file']
+        
+        if file.filename == '':
+            flash("No selected file.", "error")
+            return redirect(request.url)
+        
+        if file and allowed_file(file.filename):
+            # 1. Securely save the uploaded PDF to disk (pdf2docx needs a file path)
+            filename = secure_filename(file.filename)
+            pdf_filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(pdf_filepath)
+            
+            # 2. Define the output DOCX buffer and filename
+            docx_buffer = BytesIO()
+            base_filename = os.path.splitext(filename)[0]
+            docx_filename = f"{base_filename}.docx"
 
+            # 3. Perform the conversion
+            if convert_pdf_to_docx(pdf_filepath, docx_buffer):
+                # 4. Clean up the uploaded PDF file immediately
+                os.remove(pdf_filepath)
+                
+                # 5. Send the converted DOCX for download
+                return send_file(
+                    docx_buffer,
+                    mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    as_attachment=True,
+                    download_name=docx_filename
+                )
+            else:
+                # 4. Clean up the uploaded PDF file on failure
+                if os.path.exists(pdf_filepath):
+                    os.remove(pdf_filepath)
+                return redirect(url_for('pdf_to_docx'))
+        
+        # Path for disallowed file extension (if someone tries to upload non-pdf)
+        flash("Disallowed file type. Only PDF is allowed.", "error")
+        return redirect(request.url)
+
+    # Handles GET request or fallback after failure
+    return render_template('pdf_to_docx.html')
 
 if __name__ == '__main__':
     # Clean up the uploads folder on server start (optional but recommended)
