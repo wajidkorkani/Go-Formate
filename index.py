@@ -15,6 +15,7 @@ from pdf2image import convert_from_path
 from werkzeug.utils import secure_filename
 # from pdf2docx import Converter # New Import for DOCX conversion
 from io import BytesIO
+from pytube import YouTube
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_for_flash'
@@ -566,6 +567,29 @@ def pdf_to_docx():
 
     # Handles GET request or fallback after failure
     return render_template('pdf_to_docx.html')
+
+@app.route("/download-youtube-videos")
+def DownloadYoutubeVideos():
+    return render("youtube.html")
+
+@app.route("/download/youtube-videos", methods=['POST'])
+def download_youtube_videos():
+    if request.method == 'POST':
+        url = request.form.get('url')
+
+        try:
+            yt = YouTube(url)
+            stream = yt.streams.get_highest_resolution()
+
+            # Download to temporary folder
+            filename = stream.default_filename
+            filepath = os.path.join("downloads", filename)
+            stream.download(output_path="downloads")
+
+            return send_file(filepath, as_attachment=True)
+
+        except Exception as e:
+            return redirect(url_for('DownloadYoutubeVideos'))
 
 if __name__ == '__main__':
     # Clean up the uploads folder on server start (optional but recommended)
