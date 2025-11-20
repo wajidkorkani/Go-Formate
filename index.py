@@ -16,6 +16,7 @@ from werkzeug.utils import secure_filename
 # from pdf2docx import Converter # New Import for DOCX conversion
 from io import BytesIO
 from pytube import YouTube
+import yt_dlp
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_for_flash'
@@ -576,17 +577,21 @@ def DownloadYoutubeVideos():
 def download_youtube_videos():
     if request.method == 'POST':
         url = request.form.get('url')
-
         try:
-            yt = YouTube(url)
-            stream = yt.streams.get_highest_resolution()
+            # Create a temporary directory
+            with tempfile.TemporaryDirectory() as tmpdirname:
+                ydl_opts = {
+                    'format': 'best',
+                    'outtmpl': os.path.join(tmpdirname, '%(title)s.%(ext)s'),
+                    'noplaylist': True
+                }
 
-            # Download to temporary folder
-            filename = stream.default_filename
-            filepath = os.path.join("downloads", filename)
-            stream.download(output_path="downloads")
+                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                    info_dict = ydl.extract_info(url)
+                    filename = ydl.prepare_filename(info_dict)
 
-            return send_file(filepath, as_attachment=True)
+                # Send file to browser
+                return send_file(filename, as_attachment=True)
 
         except Exception as e:
             return redirect(url_for('DownloadYoutubeVideos'))
