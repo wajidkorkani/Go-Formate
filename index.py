@@ -498,27 +498,6 @@ def convert_pdf():
                 return redirect(url_for('pdf_to_jpg'))
 
 
-# def convert_pdf_to_docx(pdf_filepath, docx_buffer):
-#     """
-#     Converts a PDF file to a DOCX file and writes the result to a BytesIO buffer.
-    
-#     :param pdf_filepath: Path to the input PDF file.
-#     :param docx_buffer: BytesIO buffer to store the output DOCX data.
-#     :returns: True on success, False on failure.
-#     """
-#     try:
-#         cv = Converter(pdf_filepath)
-#         # Convert the PDF and write the output directly to the buffer.
-#         # This prevents saving a large file to the disk before sending it.
-#         cv.convert(docx_buffer)
-#         cv.close()
-#         docx_buffer.seek(0)
-#         return True
-#     except Exception as e:
-#         print(f"PDF to DOCX conversion error: {e}")
-#         flash(f"❌ Conversion failed! Error: {e}", "error")
-#         return False
-
 @app.route('/pdf-to-docx', methods=['GET', 'POST'])
 def pdf_to_docx():
     """Handles the PDF to DOCX conversion form submission."""
@@ -595,6 +574,43 @@ def download_youtube_videos():
 
         except Exception as e:
             return redirect(url_for('DownloadYoutubeVideos'))
+
+
+@app.route('/jpg-to-ico')
+def Jpg_To_Ico():
+    return render('jpg_to_ico.html')
+
+@app.route('/jpgtoico', methods=['GET', 'POST'])
+def jpgTo_ico():
+    if request.method == 'POST':
+        # 1. Get the file from the request
+        file = request.files.get('image')
+
+        if file:
+            try:
+                # 2. Open the image using Pillow
+                # file.stream allows us to read the upload directly without saving it
+                img = Image.open(file.stream)
+
+                # 3. Create an in-memory bytes buffer
+                img_io = BytesIO()
+
+                # 4. Save the image to the buffer as ICO
+                # 'sizes' ensures the icon contains standard dimensions (optional but recommended)
+                img.save(img_io, format='ICO', sizes=[(32, 32), (64, 64), (128, 128)])
+
+                # 5. Rewind the buffer to the beginning so it can be read
+                img_io.seek(0)
+
+                # 6. Send the file back to the user
+                return send_file(
+                    img_io,
+                    mimetype='image/x-icon',
+                    as_attachment=True,
+                    download_name='converted_icon.ico'
+                )
+            except Exception as e:
+                return f"Error processing image: {e}", 500
 
 if __name__ == '__main__':
     # Clean up the uploads folder on server start (optional but recommended)
