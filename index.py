@@ -17,6 +17,9 @@ from werkzeug.utils import secure_filename
 from io import BytesIO
 from pytube import YouTube
 import yt_dlp
+import uuid
+import comtypes.client
+import pythoncom  # Required for COM threading in Flask
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_for_flash'
@@ -321,7 +324,7 @@ UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Define allowed extensions
-ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'pdf', 'docx'}
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'pdf', 'docx', 'ppt', 'pptx', 'ico', 'png', 'csv'}
 
 def allowed_file(filename):
     """Checks if the file extension is allowed."""
@@ -611,6 +614,96 @@ def jpgTo_ico():
                 )
             except Exception as e:
                 return f"Error processing image: {e}", 500
+
+def convert_with_ms_office(input_path, output_dir):
+    """
+    Uses Microsoft PowerPoint to convert the file to PDF.
+    Requires MS Office to be installed on the server/machine.
+    """
+    
+    # 1. MS Office requires ABSOLUTE paths. 
+    # Relative paths (like 'uploads/file.ppt') will fail.
+    abs_input_path = os.path.abspath(input_path)
+    
+    base_name = os.path.basename(input_path)
+    filename_no_ext = os.path.splitext(base_name)[0]
+    abs_output_path = os.path.abspath(os.path.join(output_dir, f"{filename_no_ext}.pdf"))
+
+    # 2. Initialize COM library (Critical for Flask threading)
+    pythoncom.CoInitialize()
+    
+    powerpoint = None
+    presentation = None
+
+    try:
+        # 3. Launch PowerPoint
+        powerpoint = comtypes.client.CreateObject("PowerPoint.Application")
+        
+        # Optional: Keep it invisible (might not work on all Windows versions)
+        # powerpoint.Visible = 1 
+
+        # 4. Open the presentation
+        # WithWindow=False prevents the window from popping up visibly
+        presentation = powerpoint.Presentations.Open(abs_input_path, WithWindow=False)
+        
+        # 5. Save as PDF
+        # 32 is the file format ID for PDF in Microsoft Office
+        presentation.SaveAs(abs_output_path, 32)
+        
+        return abs_output_path
+
+    except Exception as e:
+        raise Exception(f"MS Office Error: {e}")
+        
+    finally:
+        # 6. Clean up and close PowerPoint safely
+        if presentation:
+            presentation.Close()
+        if powerpoint:
+            # Only quit if you want to close the main app. 
+            # In high-traffic apps, you might keep it open, but for this, we Quit to save RAM.
+            powerpoint.Quit()
+        
+        # Uninitialize COM
+        pythoncom.CoUninitialize()
+
+OUTPUT_FOLDER = 'converted'
+os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+
+@app.route('/ppt-to-pdf', methods=['GET', 'POST'])
+def ppt_to_pdf():
+    if request.method == 'POST':
+        file = request.files.get('file')
+        
+        if not file or file.filename == '':
+            return "No file selected", 400
+            
+        if allowed_file(file.filename):
+            unique_id = str(uuid.uuid4())
+            ext = file.filename.rsplit('.', 1)[1].lower()
+            input_filename = f"{unique_id}.{ext}"
+            input_path = os.path.join(UPLOAD_FOLDER, input_filename)
+            
+            file.save(input_path)
+            
+            try:
+                # --- CALL THE MS OFFICE FUNCTION ---
+                pdf_path = convert_with_ms_office(input_path, OUTPUT_FOLDER)
+                
+                return send_file(
+                    pdf_path,
+                    as_attachment=True,
+                    download_name='presentation.pdf'
+                )
+                
+            except Exception as e:
+                print(f"ERROR: {e}")
+                return f"Conversion Failed: {str(e)}", 500
+            finally:
+                if os.path.exists(input_path):
+                    os.remove(input_path)
+                    
+    return render('ppt_to_pdf.html')
 
 if __name__ == '__main__':
     # Clean up the uploads folder on server start (optional but recommended)
