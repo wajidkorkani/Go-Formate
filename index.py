@@ -324,7 +324,7 @@ UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Define allowed extensions
-ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'pdf', 'docx', 'ppt', 'pptx', 'ico', 'png', 'csv', 'xlsx', 'xls'}
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'pdf', 'docx', 'ppt', 'pptx', 'ico', 'png', 'csv', 'xlsx', 'xls', 'json'}
 
 def allowed_file(filename):
     """Checks if the file extension is allowed."""
@@ -844,6 +844,79 @@ def pdf_to_docx():
 
     return render('pdf_to_docx.html')
 
+
+def convert_json_to_csv(input_path, output_dir):
+    """
+    Converts JSON to CSV using Pandas.
+    Handles standard lists of objects and nested structures via normalization.
+    """
+    base_name = os.path.basename(input_path)
+    filename_no_ext = os.path.splitext(base_name)[0]
+    output_path = os.path.join(output_dir, f"{filename_no_ext}.csv")
+
+    try:
+        # Strategy 1: Try reading directly (Works for simple lists of records)
+        # e.g., [{"a": 1}, {"a": 2}]
+        df = pd.read_json(input_path)
+        
+    except ValueError:
+        # Strategy 2: Fallback for nested or complex JSON
+        # If direct read fails, load raw JSON and normalize it (flatten it)
+        with open(input_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        # pd.json_normalize flattens nested dictionaries (e.g., {"user": {"id": 1}} -> user.id)
+        df = pd.json_normalize(data)
+
+    # Save to CSV
+    # index=False removes the 0,1,2,3 row numbers
+    df.to_csv(output_path, index=False, encoding='utf-8')
+    
+    return output_path
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    error_msg = None
+    if request.method == 'POST':
+        file = request.files.get('file')
+        
+        if not file or file.filename == '':
+            error_msg = "No file selected"
+        elif not allowed_file(file.filename):
+            error_msg = "Invalid file type. Please upload a .json file."
+        else:
+            # Generate unique filename
+            unique_id = str(uuid.uuid4())
+            ext = file.filename.rsplit('.', 1)[1].lower()
+            input_filename = f"{unique_id}.{ext}"
+            input_path = os.path.join(UPLOAD_FOLDER, input_filename)
+            
+            file.save(input_path)
+            
+            try:
+                # Convert
+                csv_path = convert_json_to_csv(input_path, OUTPUT_FOLDER)
+                
+                return send_file(
+                    csv_path,
+                    as_attachment=True,
+                    download_name='converted_data.csv',
+                    mimetype='text/csv'
+                )
+                
+            except Exception as e:
+                error_msg = f"Conversion Failed: {str(e)}"
+                # Clean up if something broke
+                if os.path.exists(input_path):
+                    os.remove(input_path)
+            finally:
+                # Clean up input file
+                # (Note: We keep the output file briefly so send_file can stream it, 
+                # usually cleaned up via background tasks in production)
+                if os.path.exists(input_path):
+                    os.remove(input_path)
+
+    return render('json_to_csv.html', error=error_msg)
 
 
 if __name__ == '__main__':
