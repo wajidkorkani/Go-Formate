@@ -788,6 +788,63 @@ def index():
     return render('excel_to_pdf.html')
 
 
+def convert_pdf_to_docx_com(input_path, output_dir):
+    # Absolute paths required for COM
+    abs_input_path = os.path.abspath(input_path)
+    
+    base_name = os.path.basename(input_path)
+    filename_no_ext = os.path.splitext(base_name)[0]
+    # File format 16 is wdFormatDocumentDefault (docx)
+    abs_output_path = os.path.abspath(os.path.join(output_dir, f"{filename_no_ext}.docx"))
+
+    pythoncom.CoInitialize()
+    word = None
+    doc = None
+
+    try:
+        word = comtypes.client.CreateObject("Word.Application")
+        word.Visible = False
+        
+        # CRITICAL: Disable alerts to bypass the "Converting PDF" popup dialog
+        word.DisplayAlerts = 0 
+
+        # Open the PDF (Word acts as a converter here)
+        doc = word.Documents.Open(abs_input_path)
+        
+        # Save as DOCX (Format 16)
+        doc.SaveAs(abs_output_path, FileFormat=16)
+        
+        return abs_output_path
+    except Exception as e:
+        raise Exception(f"MS Word Error: {e}")
+    finally:
+        if doc:
+            doc.Close()
+        if word:
+            word.Quit()
+        pythoncom.CoUninitialize()
+
+@app.route('/pdf-to-docx', methods=['GET', 'POST'])
+def pdf_to_docx():
+    if request.method == 'POST':
+        file = request.files.get('file')
+        if file and file.filename.lower().endswith('.pdf'):
+            unique_id = str(uuid.uuid4())
+            input_path = os.path.join(UPLOAD_FOLDER, f"{unique_id}.pdf")
+            file.save(input_path)
+
+            try:
+                docx_path = convert_pdf_to_docx_com(input_path, OUTPUT_FOLDER)
+                return send_file(docx_path, as_attachment=True, download_name='converted.docx')
+            except Exception as e:
+                return f"Error: {e}", 500
+            finally:
+                if os.path.exists(input_path):
+                    os.remove(input_path)
+
+    return render('pdf_to_docx.html')
+
+
 
 if __name__ == '__main__':
     # Clean up the uploads folder on server start (optional but recommended)
