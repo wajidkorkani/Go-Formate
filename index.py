@@ -324,7 +324,7 @@ UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Define allowed extensions
-ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'pdf', 'docx', 'ppt', 'pptx', 'ico', 'png', 'csv'}
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'pdf', 'docx', 'ppt', 'pptx', 'ico', 'png', 'csv', 'xlsx', 'xls'}
 
 def allowed_file(filename):
     """Checks if the file extension is allowed."""
@@ -704,6 +704,90 @@ def ppt_to_pdf():
                     os.remove(input_path)
                     
     return render('ppt_to_pdf.html')
+
+
+def convert_excel_to_pdf(input_path, output_dir):
+    """
+    Uses Microsoft Excel to convert the file to PDF.
+    """
+    # 1. Excel requires ABSOLUTE paths
+    abs_input_path = os.path.abspath(input_path)
+    
+    base_name = os.path.basename(input_path)
+    filename_no_ext = os.path.splitext(base_name)[0]
+    abs_output_path = os.path.abspath(os.path.join(output_dir, f"{filename_no_ext}.pdf"))
+
+    # 2. Initialize COM (Critical for Flask)
+    pythoncom.CoInitialize()
+    
+    excel = None
+    workbook = None
+
+    try:
+        # 3. Launch Excel
+        excel = comtypes.client.CreateObject("Excel.Application")
+        excel.Visible = False # Run in background
+        excel.DisplayAlerts = False # Disable popups like "Overwrite file?"
+
+        # 4. Open the workbook
+        workbook = excel.Workbooks.Open(abs_input_path)
+        
+        # 5. Export as PDF
+        # 0 represents 'xlTypePDF' in the Excel Object Model
+        # Using ExportAsFixedFormat is more reliable for PDF than SaveAs in Excel
+        workbook.ExportAsFixedFormat(0, abs_output_path)
+        
+        return abs_output_path
+
+    except Exception as e:
+        raise Exception(f"Excel Error: {e}")
+        
+    finally:
+        # 6. Clean up
+        if workbook:
+            workbook.Close(SaveChanges=False) # Close without saving changes to the Excel file
+        if excel:
+            excel.Quit()
+        
+        # Release COM resources
+        pythoncom.CoUninitialize()
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        file = request.files.get('file')
+        
+        if not file or file.filename == '':
+            return "No file selected", 400
+            
+        if allowed_file(file.filename):
+            unique_id = str(uuid.uuid4())
+            ext = file.filename.rsplit('.', 1)[1].lower()
+            input_filename = f"{unique_id}.{ext}"
+            input_path = os.path.join(UPLOAD_FOLDER, input_filename)
+            
+            file.save(input_path)
+            
+            try:
+                # --- CALL THE EXCEL FUNCTION ---
+                pdf_path = convert_excel_to_pdf(input_path, OUTPUT_FOLDER)
+                
+                return send_file(
+                    pdf_path,
+                    as_attachment=True,
+                    download_name='spreadsheet.pdf'
+                )
+                
+            except Exception as e:
+                print(f"ERROR: {e}")
+                return f"Conversion Failed: {str(e)}", 500
+            finally:
+                if os.path.exists(input_path):
+                    os.remove(input_path)
+                    
+    return render('excel_to_pdf.html')
+
+
 
 if __name__ == '__main__':
     # Clean up the uploads folder on server start (optional but recommended)
