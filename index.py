@@ -828,25 +828,25 @@ def convert_pdf_to_docx_com(input_path, output_dir):
             word.Quit()
         pythoncom.CoUninitialize()
 
-@app.route('/pdf-to-docx', methods=['GET', 'POST'])
-def pdf_to_docx():
-    if request.method == 'POST':
-        file = request.files.get('file')
-        if file and file.filename.lower().endswith('.pdf'):
-            unique_id = str(uuid.uuid4())
-            input_path = os.path.join(UPLOAD_FOLDER, f"{unique_id}.pdf")
-            file.save(input_path)
+# @app.route('/pdf-to-docx', methods=['POST'])
+# def pdf_to_docx():
+#     if request.method == 'POST':
+#         file = request.files.get('file')
+#         if file and file.filename.lower().endswith('.pdf'):
+#             unique_id = str(uuid.uuid4())
+#             input_path = os.path.join(UPLOAD_FOLDER, f"{unique_id}.pdf")
+#             file.save(input_path)
 
-            try:
-                docx_path = convert_pdf_to_docx_com(input_path, OUTPUT_FOLDER)
-                return send_file(docx_path, as_attachment=True, download_name='converted.docx')
-            except Exception as e:
-                return f"Error: {e}", 500
-            finally:
-                if os.path.exists(input_path):
-                    os.remove(input_path)
+#             try:
+#                 docx_path = convert_pdf_to_docx_com(input_path, OUTPUT_FOLDER)
+#                 return send_file(docx_path, as_attachment=True, download_name='converted.docx')
+#             except Exception as e:
+#                 return f"Error: {e}", 500
+#             finally:
+#                 if os.path.exists(input_path):
+#                     os.remove(input_path)
 
-    return render('pdf_to_docx.html')
+#     return render('pdf_to_docx.html')
 
 
 def convert_json_to_csv(input_path, output_dir):
@@ -878,49 +878,49 @@ def convert_json_to_csv(input_path, output_dir):
     
     return output_path
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    error_msg = None
-    if request.method == 'POST':
-        file = request.files.get('file')
+# @app.route('/', methods=['GET', 'POST'])
+# def index():
+#     error_msg = None
+#     if request.method == 'POST':
+#         file = request.files.get('file')
         
-        if not file or file.filename == '':
-            error_msg = "No file selected"
-        elif not allowed_file(file.filename):
-            error_msg = "Invalid file type. Please upload a .json file."
-        else:
-            # Generate unique filename
-            unique_id = str(uuid.uuid4())
-            ext = file.filename.rsplit('.', 1)[1].lower()
-            input_filename = f"{unique_id}.{ext}"
-            input_path = os.path.join(UPLOAD_FOLDER, input_filename)
+#         if not file or file.filename == '':
+#             error_msg = "No file selected"
+#         elif not allowed_file(file.filename):
+#             error_msg = "Invalid file type. Please upload a .json file."
+#         else:
+#             # Generate unique filename
+#             unique_id = str(uuid.uuid4())
+#             ext = file.filename.rsplit('.', 1)[1].lower()
+#             input_filename = f"{unique_id}.{ext}"
+#             input_path = os.path.join(UPLOAD_FOLDER, input_filename)
             
-            file.save(input_path)
+#             file.save(input_path)
             
-            try:
-                # Convert
-                csv_path = convert_json_to_csv(input_path, OUTPUT_FOLDER)
+#             try:
+#                 # Convert
+#                 csv_path = convert_json_to_csv(input_path, OUTPUT_FOLDER)
                 
-                return send_file(
-                    csv_path,
-                    as_attachment=True,
-                    download_name='converted_data.csv',
-                    mimetype='text/csv'
-                )
+#                 return send_file(
+#                     csv_path,
+#                     as_attachment=True,
+#                     download_name='converted_data.csv',
+#                     mimetype='text/csv'
+#                 )
                 
-            except Exception as e:
-                error_msg = f"Conversion Failed: {str(e)}"
-                # Clean up if something broke
-                if os.path.exists(input_path):
-                    os.remove(input_path)
-            finally:
-                # Clean up input file
-                # (Note: We keep the output file briefly so send_file can stream it, 
-                # usually cleaned up via background tasks in production)
-                if os.path.exists(input_path):
-                    os.remove(input_path)
+#             except Exception as e:
+#                 error_msg = f"Conversion Failed: {str(e)}"
+#                 # Clean up if something broke
+#                 if os.path.exists(input_path):
+#                     os.remove(input_path)
+#             finally:
+#                 # Clean up input file
+#                 # (Note: We keep the output file briefly so send_file can stream it, 
+#                 # usually cleaned up via background tasks in production)
+#                 if os.path.exists(input_path):
+#                     os.remove(input_path)
 
-    return render('json_to_csv.html', error=error_msg)
+#     return render('json_to_csv.html', error=error_msg)
 
 
 @app.route('/qr')
