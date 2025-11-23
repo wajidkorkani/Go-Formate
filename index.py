@@ -13,13 +13,17 @@ import os
 import zipfile
 from pdf2image import convert_from_path
 from werkzeug.utils import secure_filename
-# from pdf2docx import Converter # New Import for DOCX conversion
 from io import BytesIO
 from pytube import YouTube
 import yt_dlp
 import uuid
 import comtypes.client
 import pythoncom  # Required for COM threading in Flask
+import qrcode
+from io import BytesIO
+from pyzbar.pyzbar import decode
+from PIL import Image
+
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_for_flash'
@@ -917,6 +921,74 @@ def index():
                     os.remove(input_path)
 
     return render('json_to_csv.html', error=error_msg)
+
+
+@app.route('/qr')
+def qr():
+    """Render the main page."""
+    return render('index.html')
+
+@app.route('/generate', methods=['POST'])
+def generate_qr():
+    """
+    Generates a QR code from the provided text data.
+    Returns the image directly as a response stream.
+    """
+    data = request.form.get('data', '')
+    
+    if not data:
+        return "No data provided", 400
+
+    # Generate QR Code
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(data)
+    qr.make(fit=True)
+
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    # Save image to a memory buffer (BytesIO) instead of disk
+    buffer = BytesIO()
+    img.save(buffer)
+    buffer.seek(0)
+
+    return send_file(buffer, mimetype='image/png', as_attachment=False, download_name='qrcode.png')
+
+@app.route('/scan', methods=['POST'])
+def scan_qr():
+    """
+    Receives an uploaded image file, attempts to read a QR code from it,
+    and returns the decoded text.
+    """
+    if 'qr_image' not in request.files:
+        return "No file uploaded", 400
+
+    file = request.files['qr_image']
+    
+    if file.filename == '':
+        return "No file selected", 400
+
+    try:
+        # Open image using Pillow
+        img = Image.open(file)
+        
+        # Decode using pyzbar
+        decoded_objects = decode(img)
+
+        if not decoded_objects:
+            return "No QR code detected in the image.", 200
+
+        # Extract data from the first detected QR code
+        result_data = decoded_objects[0].data.decode("utf-8")
+        return f"Decoded Data: {result_data}"
+
+    except Exception as e:
+        return f"Error processing image: {str(e)}", 500
+
 
 
 if __name__ == '__main__':
