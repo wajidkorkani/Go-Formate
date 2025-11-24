@@ -23,6 +23,8 @@ import qrcode
 from io import BytesIO
 from pyzbar.pyzbar import decode
 from PIL import Image
+import tempfile
+from pdf2docx import Converter
 
 
 app = Flask(__name__)
@@ -553,7 +555,7 @@ def pdf_to_docx():
         return redirect(request.url)
 
     # Handles GET request or fallback after failure
-    return render_template('pdf_to_docx.html')
+    return render('pdf_to_docx.html')
 
 @app.route("/download-youtube-videos")
 def DownloadYoutubeVideos():
@@ -756,8 +758,8 @@ def convert_excel_to_pdf(input_path, output_dir):
         # Release COM resources
         pythoncom.CoUninitialize()
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
+@app.route('/excel-to-pdf', methods=['GET', 'POST'])
+def excel_to_pdf():
     if request.method == 'POST':
         file = request.files.get('file')
         
@@ -792,61 +794,53 @@ def index():
     return render('excel_to_pdf.html')
 
 
-def convert_pdf_to_docx_com(input_path, output_dir):
-    # Absolute paths required for COM
-    abs_input_path = os.path.abspath(input_path)
-    
-    base_name = os.path.basename(input_path)
-    filename_no_ext = os.path.splitext(base_name)[0]
-    # File format 16 is wdFormatDocumentDefault (docx)
-    abs_output_path = os.path.abspath(os.path.join(output_dir, f"{filename_no_ext}.docx"))
 
-    pythoncom.CoInitialize()
-    word = None
-    doc = None
-
+def convert_pdf_to_docx(pdf_buffer):
     try:
-        word = comtypes.client.CreateObject("Word.Application")
-        word.Visible = False
-        
-        # CRITICAL: Disable alerts to bypass the "Converting PDF" popup dialog
-        word.DisplayAlerts = 0 
+        # Step 1: Create temporary files
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
+            temp_pdf.write(pdf_buffer.getvalue())
+            pdf_path = temp_pdf.name
 
-        # Open the PDF (Word acts as a converter here)
-        doc = word.Documents.Open(abs_input_path)
-        
-        # Save as DOCX (Format 16)
-        doc.SaveAs(abs_output_path, FileFormat=16)
-        
-        return abs_output_path
+        temp_docx_path = pdf_path.replace(".pdf", ".docx")
+
+        # Step 2: Convert PDF → DOCX
+        cv = Converter(pdf_path)
+        cv.convert(temp_docx_path)
+        cv.close()
+
+        # Step 3: Read DOCX result into BytesIO
+        with open(temp_docx_path, "rb") as f:
+            docx_buffer = BytesIO(f.read())
+
+        # Step 4: Cleanup
+        os.remove(pdf_path)
+        os.remove(temp_docx_path)
+
+        return docx_buffer
     except Exception as e:
-        raise Exception(f"MS Word Error: {e}")
-    finally:
-        if doc:
-            doc.Close()
-        if word:
-            word.Quit()
-        pythoncom.CoUninitialize()
+        print("Conversion error:", e)
+        return None
 
-# @app.route('/pdf-to-docx', methods=['POST'])
-# def pdf_to_docx():
-#     if request.method == 'POST':
-#         file = request.files.get('file')
-#         if file and file.filename.lower().endswith('.pdf'):
-#             unique_id = str(uuid.uuid4())
-#             input_path = os.path.join(UPLOAD_FOLDER, f"{unique_id}.pdf")
-#             file.save(input_path)
+@app.route('/pdf-to-docx', methods=['POST'])
+def pdf_to_docx():
+    if request.method == 'POST':
+        file = request.files.get('file')
+        if file and file.filename.lower().endswith('.pdf'):
+            unique_id = str(uuid.uuid4())
+            input_path = os.path.join(UPLOAD_FOLDER, f"{unique_id}.pdf")
+            file.save(input_path)
 
-#             try:
-#                 docx_path = convert_pdf_to_docx_com(input_path, OUTPUT_FOLDER)
-#                 return send_file(docx_path, as_attachment=True, download_name='converted.docx')
-#             except Exception as e:
-#                 return f"Error: {e}", 500
-#             finally:
-#                 if os.path.exists(input_path):
-#                     os.remove(input_path)
+            try:
+                docx_path = convert_pdf_to_docx(input_path, OUTPUT_FOLDER)
+                return send_file(docx_path, as_attachment=True, download_name='converted.docx')
+            except Exception as e:
+                return f"Error: {e}", 500
+            finally:
+                if os.path.exists(input_path):
+                    os.remove(input_path)
 
-#     return render('pdf_to_docx.html')
+    return render('pdf_to_docx.html')
 
 
 def convert_json_to_csv(input_path, output_dir):
@@ -878,55 +872,55 @@ def convert_json_to_csv(input_path, output_dir):
     
     return output_path
 
-# @app.route('/', methods=['GET', 'POST'])
-# def index():
-#     error_msg = None
-#     if request.method == 'POST':
-#         file = request.files.get('file')
+@app.route('/json-to-csv', methods=['GET', 'POST'])
+def json_to_csv():
+    # error_msg = None
+    if request.method == 'POST':
+        file = request.files.get('file')
         
-#         if not file or file.filename == '':
-#             error_msg = "No file selected"
-#         elif not allowed_file(file.filename):
-#             error_msg = "Invalid file type. Please upload a .json file."
-#         else:
-#             # Generate unique filename
-#             unique_id = str(uuid.uuid4())
-#             ext = file.filename.rsplit('.', 1)[1].lower()
-#             input_filename = f"{unique_id}.{ext}"
-#             input_path = os.path.join(UPLOAD_FOLDER, input_filename)
+        if not file or file.filename == '':
+            error_msg = "No file selected"
+        elif not allowed_file(file.filename):
+            error_msg = "Invalid file type. Please upload a .json file."
+        else:
+            # Generate unique filename
+            unique_id = str(uuid.uuid4())
+            ext = file.filename.rsplit('.', 1)[1].lower()
+            input_filename = f"{unique_id}.{ext}"
+            input_path = os.path.join(UPLOAD_FOLDER, input_filename)
             
-#             file.save(input_path)
+            file.save(input_path)
             
-#             try:
-#                 # Convert
-#                 csv_path = convert_json_to_csv(input_path, OUTPUT_FOLDER)
+            try:
+                # Convert
+                csv_path = convert_json_to_csv(input_path, OUTPUT_FOLDER)
                 
-#                 return send_file(
-#                     csv_path,
-#                     as_attachment=True,
-#                     download_name='converted_data.csv',
-#                     mimetype='text/csv'
-#                 )
+                return send_file(
+                    csv_path,
+                    as_attachment=True,
+                    download_name='converted_data.csv',
+                    mimetype='text/csv'
+                )
                 
-#             except Exception as e:
-#                 error_msg = f"Conversion Failed: {str(e)}"
-#                 # Clean up if something broke
-#                 if os.path.exists(input_path):
-#                     os.remove(input_path)
-#             finally:
-#                 # Clean up input file
-#                 # (Note: We keep the output file briefly so send_file can stream it, 
-#                 # usually cleaned up via background tasks in production)
-#                 if os.path.exists(input_path):
-#                     os.remove(input_path)
+            except Exception as e:
+                error_msg = f"Conversion Failed: {str(e)}"
+                # Clean up if something broke
+                if os.path.exists(input_path):
+                    os.remove(input_path)
+            finally:
+                # Clean up input file
+                # (Note: We keep the output file briefly so send_file can stream it, 
+                # usually cleaned up via background tasks in production)
+                if os.path.exists(input_path):
+                    os.remove(input_path)
 
-#     return render('json_to_csv.html', error=error_msg)
+    return render('json_to_csv.html', error=error_msg)
 
 
 @app.route('/qr')
-def qr():
+def QR():
     """Render the main page."""
-    return render('index.html')
+    return render('qr.html')
 
 @app.route('/generate', methods=['POST'])
 def generate_qr():
