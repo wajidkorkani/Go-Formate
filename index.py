@@ -557,33 +557,6 @@ def pdf_to_docx():
     # Handles GET request or fallback after failure
     return render('pdf_to_docx.html')
 
-@app.route("/download-youtube-videos")
-def DownloadYoutubeVideos():
-    return render("youtube.html")
-
-@app.route("/download/youtube-videos", methods=['POST'])
-def download_youtube_videos():
-    if request.method == 'POST':
-        url = request.form.get('url')
-        try:
-            # Create a temporary directory
-            with tempfile.TemporaryDirectory() as tmpdirname:
-                ydl_opts = {
-                    'format': 'best',
-                    'outtmpl': os.path.join(tmpdirname, '%(title)s.%(ext)s'),
-                    'noplaylist': True
-                }
-
-                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    info_dict = ydl.extract_info(url)
-                    filename = ydl.prepare_filename(info_dict)
-
-                # Send file to browser
-                return send_file(filename, as_attachment=True)
-
-        except Exception as e:
-            return redirect(url_for('DownloadYoutubeVideos'))
-
 
 @app.route('/jpg-to-ico')
 def Jpg_To_Ico():
