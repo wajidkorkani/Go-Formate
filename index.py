@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw
 from textwrap import wrap
 from werkzeug.utils import secure_filename
 from PIL import Image
-from fpdf import FPDF
+# from fpdf import FPDF
 import os
 import zipfile
 from pdf2image import convert_from_path
@@ -24,7 +24,7 @@ from io import BytesIO
 from pyzbar.pyzbar import decode
 from PIL import Image
 import tempfile
-from pdf2docx import Converter
+# from pdf2docx import Converter
 
 
 app = Flask(__name__)
@@ -507,8 +507,8 @@ def convert_pdf():
                 return redirect(url_for('pdf_to_jpg'))
 
 
-@app.route('/pdf-to-docx', methods=['GET', 'POST'])
-def pdf_to_docx():
+# @app.route('/pdf-to-docx', methods=['GET', 'POST'])
+# def pdf_to_docx():
     """Handles the PDF to DOCX conversion form submission."""
     if request.method == 'POST':
         if 'file' not in request.files:
