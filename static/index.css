@@ -12,7 +12,7 @@ body {
     padding: 20px;
 }
 
-nav {
+/* nav {
     background-color: #333;
     color: white;
     display: flex;
@@ -52,6 +52,214 @@ nav {
 }
 .generate-btn:hover {
     background-color: #45a049;
+} */
+
+
+/* Base Styles - Improved Look */
+:root {
+  --primary-color: #4CAF50; /* Your green */
+  --secondary-color: #45a049; /* Darker green for hover */
+  --dark-bg: #222; /* Slightly darker background */
+  --link-color: #f0f0f0; /* Off-white link color */
+}
+
+nav {
+    background-color: var(--dark-bg);
+    color: white;
+    padding: 10px 40px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Added subtle shadow */
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px; /* Optional: Constrain width on large screens */
+    margin: 0 auto;
+}
+
+.logo {
+    font-size: 24px; /* Slightly larger */
+    font-weight: 700; /* Bolder */
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Nav Links - Desktop */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 30px; /* Increased gap for better spacing */
+}
+
+.nav-links a {
+    color: var(--link-color);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 5px 0; /* Padding for better click area */
+    transition: color 0.3s ease, border-bottom 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: var(--primary-color);
+}
+
+/* Dropdown Menu Styles */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-btn {
+    background-color: transparent;
+    color: var(--link-color);
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 5px 0;
+    transition: color 0.3s ease;
+}
+
+.dropdown-btn:hover {
+    color: var(--primary-color);
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #333;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.4);
+    z-index: 1;
+    border-radius: 4px;
+    padding: 5px 0;
+    top: 100%; /* Position below the button */
+    left: 50%;
+    transform: translateX(-50%); /* Center the dropdown */
+}
+
+.dropdown-content a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s;
+}
+
+.dropdown-content a:hover {
+    background-color: #444; /* Darker gray on hover */
+    color: var(--primary-color);
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Generate Button - Enhanced */
+.generate-btn {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+    border: 2px solid var(--primary-color) !important;
+    padding: 10px 20px !important; /* Larger padding */
+    border-radius: 20px !important; /* More rounded */
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.generate-btn:hover {
+    background-color: var(--secondary-color) !important;
+    border-color: var(--secondary-color) !important;
+}
+
+/* Mobile Menu Toggle (Hamburger) */
+.menu-toggle {
+    display: none; /* Hide on desktop */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 20;
+}
+
+.bar {
+    display: block;
+    width: 25px;
+    height: 3px;
+    margin: 5px auto;
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+/* --- RESPONSIVE MOBILE STYLES (Screen size <= 768px) --- */
+@media screen and (max-width: 768px) {
+    
+    nav {
+        padding: 10px 20px;
+    }
+    
+    .nav-container {
+        flex-wrap: wrap; /* Allow wrapping */
+    }
+
+    /* Show the hamburger icon */
+    .menu-toggle {
+        display: block;
+    }
+
+    /* Nav Links container */
+    .nav-links {
+        display: none; /* Hidden by default */
+        flex-direction: column;
+        width: 100%;
+        text-align: center;
+        background-color: #333; /* Background for the expanded menu */
+        margin-top: 10px; /* Space from the top elements */
+    }
+
+    /* Style for links inside the mobile menu */
+    .nav-links a, .dropdown-btn {
+        width: 100%;
+        padding: 15px 0;
+        border-bottom: 1px solid #444; /* Separator lines */
+    }
+    
+    .nav-links a:last-child {
+        border-bottom: none;
+    }
+    
+    /* Dropdown in mobile view */
+    .dropdown {
+        width: 100%;
+        display: block;
+    }
+    
+    .dropdown-btn {
+        width: 100%;
+    }
+    
+    .dropdown-content {
+        position: static; /* Stack naturally in the flow */
+        width: 100%;
+        box-shadow: none;
+        transform: none;
+        border-radius: 0;
+        background-color: #444; /* Slightly darker background for content */
+    }
+
+    .dropdown-content a {
+        padding: 12px 0;
+        font-size: 14px;
+    }
+
+    /* Class added by JavaScript when menu is open */
+    .nav-links.open {
+        display: flex;
+    }
 }
 
 .slider{
