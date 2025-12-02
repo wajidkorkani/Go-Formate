@@ -9,24 +9,42 @@
 <body>
 
 
-  <nav>
+<nav>
+  <div class="nav-container">
     <div class="logo">
       <img src="https://via.placeholder.com/40" alt="Logo" style="vertical-align: middle; border-radius: 50%;">
       MyCVSite
     </div>
+    
+    <button class="menu-toggle" aria-label="Toggle navigation menu">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+
     <div class="nav-links">
       <a href="/">Home</a>
-      <a href="jpg-to-pdf">JPG to PDF</a>
-      <a href="/pdf-to-jpg">PDF to JPG</a>
-      <a href="/pdf-to-docx">PDF to Docx</a>
-      <a href="/jpg-to-ico">JPG to Ico</a>
-      <a href="/ppt-to-pdf">PPT to PDF</a>
-      <a href="/excel-to-pdf">Excel to PDF</a>
-      <a href="/json-to-csv">Json to CSV</a>
+      
+      <div class="dropdown">
+        <button class="dropdown-btn">Tools &#9662;</button>
+        <div class="dropdown-content">
+          <a href="jpg-to-pdf">JPG to PDF</a>
+          <a href="/pdf-to-jpg">PDF to JPG</a>
+          <a href="/pdf-to-docx">PDF to Docx</a>
+          <a href="/jpg-to-ico">JPG to Ico</a>
+          <a href="/ppt-to-pdf">PPT to PDF</a>
+          <a href="/excel-to-pdf">Excel to PDF</a>
+          <a href="/json-to-csv">Json to CSV</a>
+        </div>
+      </div>
+      
       <a href="/qr">QR</a>
       <a href="/form" class="generate-btn">Generate CV</a>
     </div>
-  </nav>
+  </div>
+</nav>
+
+
 <div class="slider">
     <div class="btn">
       <button class="prev" onclick="Decrease()">❮</button>
@@ -71,6 +89,27 @@
     }
 
     setInterval(Increase, 5000);
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const menuToggle = document.querySelector('.menu-toggle');
+      const navLinks = document.querySelector('.nav-links');
+
+      // Toggle the 'open' class on the nav-links
+      menuToggle.addEventListener('click', function() {
+          navLinks.classList.toggle('open');
+      });
+
+      // Close menu when a link is clicked (optional, but good for UX)
+      navLinks.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
+              if (window.innerWidth <= 768) {
+                  navLinks.classList.remove('open');
+              }
+          });
+      });
+  });
 </script>
 </body>
 </html>
