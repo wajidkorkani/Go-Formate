@@ -24,7 +24,7 @@ from io import BytesIO
 from pyzbar.pyzbar import decode
 from PIL import Image
 import tempfile
-# from pdf2docx import Converter
+from pdf2docx import Converter
 
 
 app = Flask(__name__)
