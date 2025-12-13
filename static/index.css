@@ -310,3 +310,295 @@ nav {
     height: 100px;
     width: 100px;
 }
+
+/* General Reset and Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+/* --- Navigation Bar Styles (Existing/Adapted) --- */
+nav {
+    background-color: #2c3e50;
+    color: white;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.menu-toggle {
+    display: none; /* Hide on desktop */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    outline: none;
+}
+
+.menu-toggle .bar {
+    display: block;
+    width: 25px;
+    height: 3px;
+    margin: 5px auto;
+    background-color: white;
+    transition: all 0.3s ease-in-out;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    list-style: none;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    transition: background-color 0.3s;
+    border-radius: 5px;
+}
+
+.nav-links a:hover {
+    background-color: #34495e;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-btn {
+    background-color: transparent;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    border-radius: 5px;
+}
+
+.dropdown-btn:hover {
+    background-color: #34495e;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #2c3e50;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 5px;
+}
+
+.dropdown-content a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-content a:hover {
+    background-color: #34495e;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.generate-btn {
+    background-color: #e74c3c;
+    margin-left: 10px;
+    font-weight: bold;
+    padding: 0.5rem 1.5rem !important; /* !important for stronger visual separation */
+}
+
+.generate-btn:hover {
+    background-color: #c0392b !important;
+}
+
+/* --- Slider Styles (Existing/Adapted) --- */
+.slider {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: background-image 0.5s ease-in-out;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn {
+    padding: 0 20px;
+}
+
+.slider button {
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 15px 20px;
+    cursor: pointer;
+    font-size: 1.5rem;
+    border-radius: 50%;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+
+.slider button:hover {
+    opacity: 1;
+}
+
+/* --- Main Content and Card Styles (New) --- */
+.main-content {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #2c3e50;
+    font-size: 2rem;
+}
+
+.tool-cards-container {
+    display: grid;
+    /* Default: 3 columns for desktop */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+    gap: 20px;
+}
+
+.tool-card {
+    display: block; /* Make the whole card clickable */
+    text-decoration: none;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    border-left: 5px solid #3498db; /* Subtle color highlight */
+}
+
+.tool-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.tool-card h3 {
+    color: #2c3e50;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.tool-card p {
+    color: #7f8c8d;
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+}
+
+.icon-wrapper {
+    color: white;
+    background-color: #3498db;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+}
+
+.card-link-text {
+    display: block;
+    color: #3498db;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* --- Responsive Design (Media Queries) --- */
+
+/* Tablet and smaller devices (e.g., max-width 768px) */
+@media (max-width: 768px) {
+    .slider {
+        height: 300px; /* Shorter slider on mobile */
+    }
+
+    .menu-toggle {
+        display: block; /* Show menu toggle button */
+    }
+
+    .nav-links {
+        /* Mobile menu: Hidden by default, full width, stacked */
+        display: none; 
+        flex-direction: column;
+        width: 100%;
+        position: absolute;
+        top: 60px; /* Below the nav container */
+        left: 0;
+        background-color: #2c3e50;
+        box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+        padding-bottom: 10px;
+    }
+
+    .nav-links.open {
+        display: flex; /* Show menu when 'open' class is present */
+    }
+
+    .nav-links a, .dropdown-btn {
+        width: 100%;
+        text-align: center;
+        padding: 10px 0;
+        border-radius: 0; /* Full width links */
+    }
+    
+    .dropdown {
+        width: 100%;
+    }
+
+    .dropdown-content {
+        position: static; /* Stack dropdown items in mobile view */
+        width: 100%;
+        box-shadow: none;
+        background-color: #34495e; /* Slightly different background for sub-items */
+    }
+    
+    .generate-btn {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+    
+    .tool-cards-container {
+        /* 1 or 2 columns for smaller screens */
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+}
