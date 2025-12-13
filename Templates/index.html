@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Slider</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-
 
 <nav>
   <div class="nav-container">
@@ -55,7 +55,14 @@
     </div>
 </div>
 
+<div class="main-content">
+  <h2 class="section-title">✨ Featured Tools</h2>
+  <div class="tool-cards-container">
+    </div>
+</div>
+
 <script>
+    // --- Slider Script ---
     const images = [
         "/static/images/slider1.jpg",
         "/static/images/slider2.jpg",
@@ -85,23 +92,29 @@
             i = images.length - 1;
         }
 
+        // Set the background image and add transition class
         imgTag.style.backgroundImage = `url('${images[i]}')`;
     }
 
+    // Initialize slider on load
+    document.addEventListener('DOMContentLoaded', slider);
+    
+    // Auto-advance slider
     setInterval(Increase, 5000);
-</script>
 
-<script>
+
+    // --- Navigation and Card Generation Script ---
     document.addEventListener('DOMContentLoaded', function() {
       const menuToggle = document.querySelector('.menu-toggle');
       const navLinks = document.querySelector('.nav-links');
+      const toolCardsContainer = document.querySelector('.tool-cards-container');
 
-      // Toggle the 'open' class on the nav-links
+      // 1. Navigation Toggle Logic
       menuToggle.addEventListener('click', function() {
           navLinks.classList.toggle('open');
       });
 
-      // Close menu when a link is clicked (optional, but good for UX)
+      // Close menu when a link is clicked
       navLinks.querySelectorAll('a').forEach(link => {
           link.addEventListener('click', () => {
               if (window.innerWidth <= 768) {
@@ -109,7 +122,33 @@
               }
           });
       });
-  });
+
+      // 2. Card Generation Logic
+      const toolLinks = [
+          { href: "jpg-to-pdf", text: "JPG to PDF", icon: "fa-solid fa-file-image", description: "Convert your image files to PDF format easily." },
+          { href: "/pdf-to-jpg", text: "PDF to JPG", icon: "fa-solid fa-file-pdf", description: "Turn PDF documents into high-quality JPEG images." },
+          { href: "/pdf-to-docx", text: "PDF to Docx", icon: "fa-solid fa-file-word", description: "Convert PDF files into editable Microsoft Word documents." },
+          { href: "/jpg-to-ico", text: "JPG to Ico", icon: "fa-solid fa-icons", description: "Create small ICO files from JPGs for favicons." },
+          { href: "/ppt-to-pdf", text: "PPT to PDF", icon: "fa-solid fa-file-powerpoint", description: "Convert PowerPoint presentations to static PDF documents." },
+          { href: "/excel-to-pdf", text: "Excel to PDF", icon: "fa-solid fa-file-excel", description: "Convert Excel spreadsheets to non-editable PDF format." },
+          { href: "/json-to-csv", text: "Json to CSV", icon: "fa-solid fa-file-csv", description: "Transform JSON data into a simple Comma Separated Values file." },
+          { href: "/qr", text: "QR Code Generator", icon: "fa-solid fa-solid fa-qrcode", description: "Generate custom QR codes for links, text, and more." },
+          { href: "/form", text: "Generate CV", icon: "fa-solid fa-file-lines", description: "Use our form to quickly create and download your professional CV." }
+      ];
+
+      toolLinks.forEach(tool => {
+        const card = document.createElement('a');
+        card.href = tool.href;
+        card.classList.add('tool-card');
+        card.innerHTML = `
+          <div class="icon-wrapper"><i class="${tool.icon}"></i></div>
+          <h3>${tool.text}</h3>
+          <p>${tool.description}</p>
+          <span class="card-link-text">Use Tool &rarr;</span>
+        `;
+        toolCardsContainer.appendChild(card);
+      });
+    });
 </script>
 </body>
 </html>
