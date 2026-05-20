@@ -14,11 +14,10 @@ import zipfile
 from pdf2image import convert_from_path
 from werkzeug.utils import secure_filename
 from io import BytesIO
-from pytube import YouTube
 import yt_dlp
 import uuid
 import comtypes.client
-import pythoncom  # Required for COM threading in Flask
+import pythoncom 
 import qrcode
 from io import BytesIO
 from pyzbar.pyzbar import decode
