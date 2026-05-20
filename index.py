@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw
 from textwrap import wrap
 from werkzeug.utils import secure_filename
 from PIL import Image
-# from fpdf import FPDF
+from fpdf import FPDF
 import os
 import zipfile
 from pdf2image import convert_from_path
@@ -24,7 +24,7 @@ from io import BytesIO
 from pyzbar.pyzbar import decode
 from PIL import Image
 import tempfile
-# from pdf2docx import Converter
+from pdf2docx import Converter
 
 
 app = Flask(__name__)
