@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>MyCVSite - Smart Online Tools</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/x-icon">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
 
@@ -26,113 +27,6 @@
 
         /* NAVBAR */
 
-        nav{
-            width:100%;
-            position:fixed;
-            top:0;
-            left:0;
-            z-index:1000;
-            backdrop-filter: blur(12px);
-            background:rgba(15,23,42,0.75);
-            border-bottom:1px solid rgba(255,255,255,0.08);
-        }
-
-        .nav-container{
-            width:90%;
-            margin:auto;
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            padding:18px 0;
-        }
-
-        .logo{
-            font-size:1.6rem;
-            font-weight:bold;
-            display:flex;
-            align-items:center;
-            gap:10px;
-            color:#38bdf8;
-        }
-
-        .logo img{
-            width:42px;
-            height:42px;
-            border-radius:50%;
-        }
-
-        .nav-links{
-            display:flex;
-            align-items:center;
-            gap:25px;
-        }
-
-        .nav-links a,
-        .dropdown-btn{
-            text-decoration:none;
-            color:white;
-            font-size:15px;
-            background:none;
-            border:none;
-            cursor:pointer;
-            transition:0.3s;
-        }
-
-        .nav-links a:hover,
-        .dropdown-btn:hover{
-            color:#38bdf8;
-        }
-
-        .generate-btn{
-            background:linear-gradient(135deg,#38bdf8,#0ea5e9);
-            padding:12px 22px;
-            border-radius:10px;
-            color:white !important;
-            font-weight:bold;
-            box-shadow:0 8px 25px rgba(14,165,233,0.35);
-        }
-
-        .dropdown{
-            position:relative;
-        }
-
-        .dropdown-content{
-            position:absolute;
-            top:40px;
-            left:0;
-            background:#1e293b;
-            min-width:220px;
-            border-radius:12px;
-            overflow:hidden;
-            display:none;
-            box-shadow:0 15px 40px rgba(0,0,0,0.4);
-        }
-
-        .dropdown-content a{
-            display:block;
-            padding:14px;
-            border-bottom:1px solid rgba(255,255,255,0.05);
-        }
-
-        .dropdown:hover .dropdown-content{
-            display:block;
-        }
-
-        .menu-toggle{
-            display:none;
-            flex-direction:column;
-            gap:5px;
-            background:none;
-            border:none;
-            cursor:pointer;
-        }
-
-        .bar{
-            width:25px;
-            height:3px;
-            background:white;
-            border-radius:10px;
-        }
 
         /* HERO */
 
@@ -192,7 +86,7 @@
         }
 
         .primary-btn{
-            background:#38bdf8;
+            background:linear-gradient(100deg,#59cdff,#0794d6, skyblue) !important;
             color:white;
         }
 
@@ -375,46 +269,7 @@
 
 <!-- NAVBAR -->
 
-<nav>
-    <div class="nav-container">
-
-        <div class="logo">
-            <img src="https://via.placeholder.com/40" alt="">
-            Go Formate
-        </div>
-
-        <button class="menu-toggle">
-            <span class="bar"></span>
-            <span class="bar"></span>
-            <span class="bar"></span>
-        </button>
-
-        <div class="nav-links">
-
-            <a href="/">Home</a>
-
-            <div class="dropdown">
-                <button class="dropdown-btn">
-                    Tools <i class="fa-solid fa-angle-down"></i>
-                </button>
-
-                <div class="dropdown-content">
-                    <a href="/jpg-to-pdf">JPG to PDF</a>
-                    <a href="/pdf-to-jpg">PDF to JPG</a>
-                    <a href="/pdf-to-docx">PDF to DOCX</a>
-                    <a href="/jpg-to-ico">JPG to ICO</a>
-                    <a href="/ppt-to-pdf">PPT to PDF</a>
-                    <a href="/excel-to-pdf">Excel to PDF</a>
-                    <a href="/json-to-csv">JSON to CSV</a>
-                </div>
-            </div>
-
-            <a href="/qr">QR</a>
-            <a href="/form" class="generate-btn">Generate CV</a>
-
-        </div>
-    </div>
-</nav>
+{% include 'nav.html' %}
 
 <!-- HERO SECTION -->
 <br><br><br><br>
@@ -465,7 +320,7 @@
 
 <footer>
     <p>
-        © 2026 MyCVSite — Designed with Modern UI
+        © 2026 GoFormate — Designed & Developed by Wajid Korkani
     </p>
 </footer>
 
@@ -587,7 +442,7 @@
             text:"Generate CV",
             icon:"fa-solid fa-file-lines",
             description:"Create modern professional CVs in minutes."
-        }
+        },
     ];
 
     toolLinks.forEach(tool => {
