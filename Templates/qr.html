@@ -1,136 +1,535 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask QR Tool</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <title>QR Code Tool | MyCVSite</title>
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/x-icon">
+
     <style>
-        .qr-display {
-            max-width: 300px;
-            margin-top: 20px;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 8px;
-            display: none;
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, Helvetica, sans-serif;
         }
+
+        body{
+            min-height:100vh;
+
+            background:
+            linear-gradient(rgba(15,23,42,0.93),
+            rgba(15,23,42,0.93)),
+            url('/static/images/slider2.jpg');
+
+            background-size:cover;
+            background-position:center;
+
+            color:white;
+        }
+
+
+        /* MAIN */
+
+        .container{
+            width:90%;
+            max-width:1100px;
+
+            margin:auto;
+
+            padding-top:130px;
+            padding-bottom:60px;
+        }
+
+        .hero{
+            text-align:center;
+            margin-bottom:50px;
+        }
+
+        .hero h1{
+            font-size:3rem;
+            margin-bottom:15px;
+        }
+
+        .hero p{
+            color:#cbd5e1;
+            max-width:700px;
+            margin:auto;
+            line-height:1.8;
+        }
+
+        /* CARD */
+
+        .tool-wrapper{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:30px;
+        }
+
+        .card{
+            background:rgba(15,23,42,0.72);
+
+            border:1px solid rgba(255,255,255,0.08);
+
+            backdrop-filter:blur(14px);
+
+            border-radius:28px;
+
+            padding:35px;
+
+            box-shadow:0 25px 60px rgba(0,0,0,0.4);
+        }
+
+        .card-title{
+            display:flex;
+            align-items:center;
+            gap:12px;
+
+            margin-bottom:25px;
+
+            font-size:1.3rem;
+            color:#38bdf8;
+        }
+
+        .input-box{
+            width:100%;
+
+            padding:16px 18px;
+
+            border:none;
+            outline:none;
+
+            border-radius:14px;
+
+            background:#1e293b;
+
+            color:white;
+
+            margin-bottom:20px;
+
+            font-size:15px;
+        }
+
+        .input-box::placeholder{
+            color:#94a3b8;
+        }
+
+        .input-box:focus{
+            border:1px solid #38bdf8;
+            box-shadow:0 0 0 4px rgba(56,189,248,0.15);
+        }
+
+        .btn{
+            width:100%;
+
+            border:none;
+
+            padding:16px;
+
+            border-radius:14px;
+
+            cursor:pointer;
+
+            font-size:1rem;
+            font-weight:bold;
+
+            color:white;
+
+            transition:0.3s;
+        }
+
+        .generate{
+            background:linear-gradient(135deg,#10b981,#059669);
+        }
+
+        .scan{
+            background:linear-gradient(135deg,#f59e0b,#d97706);
+        }
+
+        .btn:hover{
+            transform:translateY(-3px);
+        }
+
+        /* QR DISPLAY */
+
+        .qr-display{
+            width:250px;
+            height:250px;
+
+            object-fit:contain;
+
+            margin-top:25px;
+
+            background:white;
+
+            padding:15px;
+
+            border-radius:20px;
+
+            display:none;
+        }
+
+        .download-btn{
+            display:none;
+
+            margin-top:20px;
+
+            text-decoration:none;
+
+            background:#38bdf8;
+
+            color:white;
+
+            padding:14px 24px;
+
+            border-radius:12px;
+
+            font-weight:bold;
+
+            display:inline-block;
+        }
+
+
+        /* RESULT */
+
+
+        .file-label{
+
+            width:100%;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:12px;
+
+            padding:20px;
+
+            border-radius:18px;
+
+            background:#1e293b;
+
+            border:
+            2px dashed rgba(56,189,248,0.35);
+
+            color:#cbd5e1;
+
+            cursor:pointer;
+
+            transition:0.3s;
+
+            font-size:15px;
+        }
+
+        .file-label i{
+
+            font-size:22px;
+
+            color:#38bdf8;
+        }
+
+        .file-label:hover{
+
+            border-color:#38bdf8;
+
+            background:#243447;
+
+            transform:translateY(-2px);
+        }
+        .scan-result{
+            margin-top:25px;
+
+            background:#1e293b;
+
+            padding:18px;
+
+            border-radius:14px;
+
+            display:none;
+
+            word-break:break-word;
+        }
+
+        .scan-result strong{
+            color:#38bdf8;
+        }
+
+        /* MOBILE */
+
+        @media(max-width:900px){
+
+            .tool-wrapper{
+                grid-template-columns:1fr;
+            }
+
+            .hero h1{
+                font-size:2.2rem;
+            }
+        }
+
+        @media(max-width:768px){
+
+            .nav-container{
+                flex-direction:column;
+                gap:15px;
+            }
+
+            .hero h1{
+                font-size:2rem;
+            }
+
+            .card{
+                padding:25px;
+            }
+        }
+
     </style>
+
 </head>
-<body class="bg-light">
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white text-center">
-                    <h4>QR Code Manager</h4>
-                </div>
-                <div class="card-body">
-                    
-                    <ul class="nav nav-tabs" id="myTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="generate-tab" data-bs-toggle="tab" data-bs-target="#generate" type="button" role="tab">Generate</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="scan-tab" data-bs-toggle="tab" data-bs-target="#scan" type="button" role="tab">Scan (Upload)</button>
-                        </li>
-                    </ul>
+<body>
 
-                    <div class="tab-content mt-3" id="myTabContent">
-                        
-                        <div class="tab-pane fade show active" id="generate" role="tabpanel">
-                            <form id="generateForm">
-                                <div class="mb-3">
-                                    <label for="qrText" class="form-label">Enter Text or URL</label>
-                                    <input type="text" class="form-control" id="qrText" placeholder="https://example.com" required>
-                                </div>
-                                <button type="submit" class="btn btn-success w-100">Generate QR</button>
-                            </form>
-                            <div class="text-center">
-                                <img id="generatedImage" class="qr-display img-fluid mx-auto" alt="Generated QR">
-                                <a id="downloadLink" class="btn btn-primary mt-3" style="display: none;" download="qr_code.png">
-                                    Download Image
-                                </a>
-                            </div>
-                        </div>
+    <!-- NAVBAR -->
 
-                        <div class="tab-pane fade" id="scan" role="tabpanel">
-                            <form id="scanForm" enctype="multipart/form-data">
-                                <div class="mb-3">
-                                    <label for="qrFile" class="form-label">Upload QR Code Image</label>
-                                    <input type="file" class="form-control" id="qrFile" accept="image/*" required>
-                                </div>
-                                <button type="submit" class="btn btn-warning w-100">Scan Image</button>
-                            </form>
-                            <div id="scanResult" class="alert alert-info mt-3 d-none"></div>
-                        </div>
+{% include 'nav.html' %}
+    <!-- MAIN -->
 
-                    </div>
-                </div>
-            </div>
+    <div class="container">
+
+        <!-- HERO -->
+
+        <div class="hero">
+
+            <h1>
+                Smart QR Code Tool
+            </h1>
+
+            <p>
+                Generate stylish QR codes instantly or scan existing QR
+                code images directly from your device.
+            </p>
+
         </div>
-    </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- TOOLS -->
+
+        <div class="tool-wrapper">
+
+            <!-- GENERATE -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    <i class="fa-solid fa-qrcode"></i>
+                    Generate QR Code
+                </div>
+
+                <form id="generateForm">
+
+                    <input type="text"
+                    class="input-box"
+                    id="qrText"
+                    placeholder="Enter URL or Text..."
+                    required>
+
+                    <button type="submit"
+                    class="btn generate">
+
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        Generate QR
+
+                    </button>
+
+                </form>
+
+                <div style="text-align:center;">
+
+                    <img id="generatedImage"
+                    class="qr-display"
+                    alt="QR Code">
+
+                    <br>
+
+                    <a id="downloadLink"
+                    class="download-btn"
+                    download="qr_code.png">
+
+                        <i class="fa-solid fa-download"></i>
+                        Download QR
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            <!-- SCAN -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    <i class="fa-solid fa-camera"></i>
+                    Scan QR Code
+                </div>
+
+                <form id="scanForm"
+                enctype="multipart/form-data">
+
+                <input type="file"
+                id="pdfInput"
+                name="file"
+                accept=".pdf"
+                required
+                hidden>
+
+                <label for="pdfInput"
+                class="file-label">
+
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                    <span id="fileText">
+                        Choose PDF File
+                    </span>
+
+                </label>
+
+                <br>
+
+                    <button type="submit"
+                    class="btn scan">
+
+                        <i class="fa-solid fa-expand"></i>
+                        Scan QR
+
+                    </button>
+
+                </form>
+
+                <div id="scanResult"
+                class="scan-result"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 <script>
-    // Handle Generation
-    document.getElementById('generateForm').addEventListener('submit', async function(e) {
+
+    // GENERATE QR
+
+    document.getElementById('generateForm')
+    .addEventListener('submit', async function(e){
+
         e.preventDefault();
-        const text = document.getElementById('qrText').value;
+
+        const text =
+        document.getElementById('qrText').value;
+
         const formData = new FormData();
+
         formData.append('data', text);
 
-        // Elements
-        const img = document.getElementById('generatedImage');
-        const downloadLink = document.getElementById('downloadLink');
+        const img =
+        document.getElementById('generatedImage');
 
-        try {
+        const downloadLink =
+        document.getElementById('downloadLink');
+
+        try{
+
             const response = await fetch('/generate', {
-                method: 'POST',
-                body: formData
+
+                method:'POST',
+                body:formData
+
             });
 
-            if (response.ok) {
-                const blob = await response.blob();
-                const url = URL.createObjectURL(blob);
-                
-                // Update Image
+            if(response.ok){
+
+                const blob =
+                await response.blob();
+
+                const url =
+                URL.createObjectURL(blob);
+
                 img.src = url;
+
                 img.style.display = 'block';
 
-                // Update Download Link
                 downloadLink.href = url;
-                downloadLink.download = `qrcode_${Date.now()}.png`; // Adds timestamp to filename
-                downloadLink.style.display = 'inline-block';
+
+                downloadLink.download =
+                `qrcode_${Date.now()}.png`;
+
+                downloadLink.style.display =
+                'inline-block';
             }
-        } catch (error) {
-            console.error('Error:', error);
+
+        }catch(error){
+
+            console.log(error);
+
         }
+
     });
 
-    // Handle Scanning
-    document.getElementById('scanForm').addEventListener('submit', async function(e) {
+    // SCAN QR
+
+    document.getElementById('scanForm')
+    .addEventListener('submit', async function(e){
+
         e.preventDefault();
-        const fileInput = document.getElementById('qrFile');
-        const formData = new FormData();
-        formData.append('qr_image', fileInput.files[0]);
-        
-        const resultDiv = document.getElementById('scanResult');
-        resultDiv.classList.remove('d-none');
-        resultDiv.textContent = "Scanning...";
 
-        try {
-            const response = await fetch('/scan', {
-                method: 'POST',
-                body: formData
+        const fileInput =
+        document.getElementById('qrFile');
+
+        const formData =
+        new FormData();
+
+        formData.append(
+            'qr_image',
+            fileInput.files[0]
+        );
+
+        const resultDiv =
+        document.getElementById('scanResult');
+
+        resultDiv.style.display = 'block';
+
+        resultDiv.innerHTML =
+        "<strong>Scanning...</strong>";
+
+        try{
+
+            const response =
+            await fetch('/scan', {
+
+                method:'POST',
+                body:formData
+
             });
-            const text = await response.text();
-            resultDiv.textContent = text;
-        } catch (error) {
-            resultDiv.textContent = "Error occurred during scanning.";
+
+            const text =
+            await response.text();
+
+            resultDiv.innerHTML =
+            `<strong>Result:</strong><br>${text}`;
+
+        }catch(error){
+
+            resultDiv.innerHTML =
+            "Error occurred during scanning.";
+
         }
+
     });
+
 </script>
 
 </body>
