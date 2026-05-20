@@ -24,7 +24,9 @@ from pyzbar.pyzbar import decode
 from PIL import Image
 import tempfile
 from pdf2docx import Converter
-
+import pandas as pd
+import json
+import fitz
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_for_flash'
@@ -414,6 +416,46 @@ def allowed_file(filename):
 # --- Conversion & Zipping Logic ---
 
 def convert_pdf_to_jpg_and_zip(pdf_path, temp_dir, zip_filepath):
+
+    try:
+        pdf_document = fitz.open(pdf_path)
+
+        base_filename = os.path.splitext(
+            os.path.basename(pdf_path)
+        )[0]
+
+        with zipfile.ZipFile(zip_filepath, 'w', zipfile.ZIP_DEFLATED) as zipf:
+
+            for page_num in range(len(pdf_document)):
+
+                page = pdf_document.load_page(page_num)
+
+                pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
+
+                output_filename = f"{base_filename}_page_{page_num + 1}.jpg"
+
+                output_filepath = os.path.join(
+                    temp_dir,
+                    output_filename
+                )
+
+                pix.save(output_filepath)
+
+                zipf.write(
+                    output_filepath,
+                    arcname=output_filename
+                )
+
+                os.remove(output_filepath)
+
+        pdf_document.close()
+
+        return True
+
+    except Exception as e:
+        print(f"Conversion error: {e}")
+        flash(f"❌ Conversion failed: {e}", "error")
+        return False
     """
     Converts all pages of a PDF to JPGs and zips them.
 
@@ -766,6 +808,10 @@ def excel_to_pdf():
     return render('excel_to_pdf.html')
 
 
+@app.route('/pdf-to-docx')
+def pdf2msword():
+    return render('pdf_to_docx.html')
+
 
 def convert_pdf_to_docx(pdf_buffer):
     try:
@@ -794,56 +840,115 @@ def convert_pdf_to_docx(pdf_buffer):
         print("Conversion error:", e)
         return None
 
-@app.route('/pdf-to-docx', methods=['POST'])
+@app.route('/pdf-to-docx', methods=['GET', 'POST'])
 def pdf_to_docx():
+
     if request.method == 'POST':
+
         file = request.files.get('file')
+
+        if not file or file.filename == '':
+            return "No file selected", 400
+
         if file and file.filename.lower().endswith('.pdf'):
+
             unique_id = str(uuid.uuid4())
-            input_path = os.path.join(UPLOAD_FOLDER, f"{unique_id}.pdf")
-            file.save(input_path)
+
+            pdf_path = os.path.join(
+                UPLOAD_FOLDER,
+                f"{unique_id}.pdf"
+            )
+
+            docx_path = os.path.join(
+                OUTPUT_FOLDER,
+                f"{unique_id}.docx"
+            )
+
+            file.save(pdf_path)
 
             try:
-                docx_path = convert_pdf_to_docx(input_path, OUTPUT_FOLDER)
-                return send_file(docx_path, as_attachment=True, download_name='converted.docx')
+                cv = Converter(pdf_path)
+                cv.convert(docx_path)
+                cv.close()
+
+                return send_file(
+                    docx_path,
+                    as_attachment=True,
+                    download_name='converted.docx'
+                )
+
             except Exception as e:
-                return f"Error: {e}", 500
+                return f"Conversion error: {e}", 500
+
             finally:
-                if os.path.exists(input_path):
-                    os.remove(input_path)
+                if os.path.exists(pdf_path):
+                    os.remove(pdf_path)
 
     return render('pdf_to_docx.html')
 
+@app.route('/json-to-csv')
+def Json2CSV():
+    return render('json_to_csv.html')
 
 def convert_json_to_csv(input_path, output_dir):
-    """
-    Converts JSON to CSV using Pandas.
-    Handles standard lists of objects and nested structures via normalization.
-    """
+
     base_name = os.path.basename(input_path)
     filename_no_ext = os.path.splitext(base_name)[0]
-    output_path = os.path.join(output_dir, f"{filename_no_ext}.csv")
+
+    output_path = os.path.join(
+        output_dir,
+        f"{filename_no_ext}.csv"
+    )
 
     try:
-        # Strategy 1: Try reading directly (Works for simple lists of records)
-        # e.g., [{"a": 1}, {"a": 2}]
-        df = pd.read_json(input_path)
-        
-    except ValueError:
-        # Strategy 2: Fallback for nested or complex JSON
-        # If direct read fails, load raw JSON and normalize it (flatten it)
+
         with open(input_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-        
-        # pd.json_normalize flattens nested dictionaries (e.g., {"user": {"id": 1}} -> user.id)
-        df = pd.json_normalize(data)
 
-    # Save to CSV
-    # index=False removes the 0,1,2,3 row numbers
-    df.to_csv(output_path, index=False, encoding='utf-8')
+        # CASE 1: List
+        if isinstance(data, list):
+
+            # List of dictionaries
+            if all(isinstance(item, dict) for item in data):
+                df = pd.json_normalize(data)
+
+            # List of simple values
+            else:
+                df = pd.DataFrame(data, columns=["value"])
+
+        # CASE 2: Dictionary
+        elif isinstance(data, dict):
+
+            found_list = False
+
+            for key, value in data.items():
+
+                # Dictionary contains list of dictionaries
+                if isinstance(value, list):
+
+                    if all(isinstance(item, dict) for item in value):
+                        df = pd.json_normalize(value)
+
+                    else:
+                        df = pd.DataFrame(value, columns=[key])
+
+                    found_list = True
+                    break
+
+            # Normal dictionary
+            if not found_list:
+                df = pd.json_normalize(data)
+
+        else:
+            raise Exception("Unsupported JSON structure")
+
+        df.to_csv(output_path, index=False)
+
+        return output_path
+
+    except Exception as e:
+        raise Exception(f"JSON conversion error: {e}")
     
-    return output_path
-
 @app.route('/json-to-csv', methods=['GET', 'POST'])
 def json_to_csv():
     # error_msg = None
