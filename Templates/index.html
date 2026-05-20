@@ -1,68 +1,478 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Slider</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MyCVSite - Smart Online Tools</title>
+
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body{
+            background:#0f172a;
+            color:white;
+            overflow-x:hidden;
+        }
+
+        /* NAVBAR */
+
+        nav{
+            width:100%;
+            position:fixed;
+            top:0;
+            left:0;
+            z-index:1000;
+            backdrop-filter: blur(12px);
+            background:rgba(15,23,42,0.75);
+            border-bottom:1px solid rgba(255,255,255,0.08);
+        }
+
+        .nav-container{
+            width:90%;
+            margin:auto;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding:18px 0;
+        }
+
+        .logo{
+            font-size:1.6rem;
+            font-weight:bold;
+            display:flex;
+            align-items:center;
+            gap:10px;
+            color:#38bdf8;
+        }
+
+        .logo img{
+            width:42px;
+            height:42px;
+            border-radius:50%;
+        }
+
+        .nav-links{
+            display:flex;
+            align-items:center;
+            gap:25px;
+        }
+
+        .nav-links a,
+        .dropdown-btn{
+            text-decoration:none;
+            color:white;
+            font-size:15px;
+            background:none;
+            border:none;
+            cursor:pointer;
+            transition:0.3s;
+        }
+
+        .nav-links a:hover,
+        .dropdown-btn:hover{
+            color:#38bdf8;
+        }
+
+        .generate-btn{
+            background:linear-gradient(135deg,#38bdf8,#0ea5e9);
+            padding:12px 22px;
+            border-radius:10px;
+            color:white !important;
+            font-weight:bold;
+            box-shadow:0 8px 25px rgba(14,165,233,0.35);
+        }
+
+        .dropdown{
+            position:relative;
+        }
+
+        .dropdown-content{
+            position:absolute;
+            top:40px;
+            left:0;
+            background:#1e293b;
+            min-width:220px;
+            border-radius:12px;
+            overflow:hidden;
+            display:none;
+            box-shadow:0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        .dropdown-content a{
+            display:block;
+            padding:14px;
+            border-bottom:1px solid rgba(255,255,255,0.05);
+        }
+
+        .dropdown:hover .dropdown-content{
+            display:block;
+        }
+
+        .menu-toggle{
+            display:none;
+            flex-direction:column;
+            gap:5px;
+            background:none;
+            border:none;
+            cursor:pointer;
+        }
+
+        .bar{
+            width:25px;
+            height:3px;
+            background:white;
+            border-radius:10px;
+        }
+
+        /* HERO */
+
+        .slider{
+            width:100%;
+            height:100vh;
+            background-size:cover;
+            background-position:center;
+            position:relative;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            transition:1s ease-in-out;
+        }
+
+        .slider::before{
+            content:'';
+            position:absolute;
+            inset:0;
+            background:rgba(0,0,0,0.55);
+        }
+
+        .hero-content{
+            position:relative;
+            z-index:10;
+            text-align:center;
+            width:90%;
+            max-width:800px;
+        }
+
+        .hero-content h1{
+            font-size:4rem;
+            margin-bottom:20px;
+            line-height:1.2;
+        }
+
+        .hero-content p{
+            font-size:1.1rem;
+            color:#d1d5db;
+            margin-bottom:35px;
+            line-height:1.8;
+        }
+
+        .hero-buttons{
+            display:flex;
+            justify-content:center;
+            gap:15px;
+            flex-wrap:wrap;
+        }
+
+        .hero-buttons a{
+            text-decoration:none;
+            padding:14px 28px;
+            border-radius:12px;
+            font-weight:bold;
+            transition:0.3s;
+        }
+
+        .primary-btn{
+            background:#38bdf8;
+            color:white;
+        }
+
+        .secondary-btn{
+            border:1px solid rgba(255,255,255,0.2);
+            color:white;
+            background:rgba(255,255,255,0.05);
+        }
+
+        .primary-btn:hover,
+        .secondary-btn:hover{
+            transform:translateY(-3px);
+        }
+
+        /* SLIDER BUTTONS */
+
+        .btn button{
+            position:absolute;
+            top:50%;
+            transform:translateY(-50%);
+            z-index:50;
+            width:55px;
+            height:55px;
+            border:none;
+            border-radius:50%;
+            background:rgba(255,255,255,0.15);
+            color:white;
+            font-size:20px;
+            cursor:pointer;
+            backdrop-filter: blur(8px);
+            transition:0.3s;
+        }
+
+        .btn button:hover{
+            background:#38bdf8;
+        }
+
+        .prev{
+            left:30px;
+        }
+
+        .next{
+            right:30px;
+        }
+
+        /* SECTION */
+
+        .main-content{
+            width:90%;
+            margin:auto;
+            padding:100px 0;
+        }
+
+        .section-title{
+            text-align:center;
+            font-size:2.5rem;
+            margin-bottom:60px;
+        }
+
+        .tool-cards-container{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+            gap:30px;
+        }
+
+        .tool-card{
+            text-decoration:none;
+            color:white;
+            background:linear-gradient(145deg,#1e293b,#111827);
+            padding:35px 28px;
+            border-radius:22px;
+            transition:0.4s;
+            border:1px solid rgba(255,255,255,0.06);
+            position:relative;
+            overflow:hidden;
+        }
+
+        .tool-card::before{
+            content:'';
+            position:absolute;
+            width:180px;
+            height:180px;
+            background:rgba(56,189,248,0.08);
+            border-radius:50%;
+            top:-60px;
+            right:-60px;
+        }
+
+        .tool-card:hover{
+            transform:translateY(-10px);
+            border-color:#38bdf8;
+            box-shadow:0 15px 40px rgba(56,189,248,0.2);
+        }
+
+        .icon-wrapper{
+            width:70px;
+            height:70px;
+            border-radius:18px;
+            background:rgba(56,189,248,0.12);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            margin-bottom:25px;
+        }
+
+        .icon-wrapper i{
+            font-size:30px;
+            color:#38bdf8;
+        }
+
+        .tool-card h3{
+            font-size:1.3rem;
+            margin-bottom:12px;
+        }
+
+        .tool-card p{
+            color:#cbd5e1;
+            line-height:1.7;
+            margin-bottom:20px;
+        }
+
+        .card-link-text{
+            color:#38bdf8;
+            font-weight:bold;
+        }
+
+        /* FOOTER */
+
+        footer{
+            background:#020617;
+            padding:40px 20px;
+            text-align:center;
+            border-top:1px solid rgba(255,255,255,0.06);
+        }
+
+        footer p{
+            color:#94a3b8;
+        }
+
+        /* MOBILE */
+
+        @media(max-width:768px){
+
+            .menu-toggle{
+                display:flex;
+            }
+
+            .nav-links{
+                position:absolute;
+                top:80px;
+                left:0;
+                width:100%;
+                background:#0f172a;
+                flex-direction:column;
+                padding:20px;
+                display:none;
+            }
+
+            .nav-links.open{
+                display:flex;
+            }
+
+            .hero-content h1{
+                font-size:2.5rem;
+            }
+
+            .hero-content p{
+                font-size:1rem;
+            }
+
+            .btn button{
+                width:45px;
+                height:45px;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<nav>
-  <div class="nav-container">
-    <div class="logo">
-      <img src="https://via.placeholder.com/40" alt="Logo" style="vertical-align: middle; border-radius: 50%;">
-      MyCVSite
-    </div>
-    
-    <button class="menu-toggle" aria-label="Toggle navigation menu">
-      <span class="bar"></span>
-      <span class="bar"></span>
-      <span class="bar"></span>
-    </button>
+<!-- NAVBAR -->
 
-    <div class="nav-links">
-      <a href="/">Home</a>
-      
-      <div class="dropdown">
-        <button class="dropdown-btn">Tools &#9662;</button>
-        <div class="dropdown-content">
-          <a href="jpg-to-pdf">JPG to PDF</a>
-          <a href="/pdf-to-jpg">PDF to JPG</a>
-          <a href="/pdf-to-docx">PDF to Docx</a>
-          <a href="/jpg-to-ico">JPG to Ico</a>
-          <a href="/ppt-to-pdf">PPT to PDF</a>
-          <a href="/excel-to-pdf">Excel to PDF</a>
-          <a href="/json-to-csv">Json to CSV</a>
+<nav>
+    <div class="nav-container">
+
+        <div class="logo">
+            <img src="https://via.placeholder.com/40" alt="">
+            Go Formate
         </div>
-      </div>
-      
-      <a href="/qr">QR</a>
-      <a href="/form" class="generate-btn">Generate CV</a>
+
+        <button class="menu-toggle">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <div class="nav-links">
+
+            <a href="/">Home</a>
+
+            <div class="dropdown">
+                <button class="dropdown-btn">
+                    Tools <i class="fa-solid fa-angle-down"></i>
+                </button>
+
+                <div class="dropdown-content">
+                    <a href="/jpg-to-pdf">JPG to PDF</a>
+                    <a href="/pdf-to-jpg">PDF to JPG</a>
+                    <a href="/pdf-to-docx">PDF to DOCX</a>
+                    <a href="/jpg-to-ico">JPG to ICO</a>
+                    <a href="/ppt-to-pdf">PPT to PDF</a>
+                    <a href="/excel-to-pdf">Excel to PDF</a>
+                    <a href="/json-to-csv">JSON to CSV</a>
+                </div>
+            </div>
+
+            <a href="/qr">QR</a>
+            <a href="/form" class="generate-btn">Generate CV</a>
+
+        </div>
     </div>
-  </div>
 </nav>
 
-
+<!-- HERO SECTION -->
+<br><br><br><br>
 <div class="slider">
-    <div class="btn">
-      <button class="prev" onclick="Decrease()">❮</button>
+
+    <div class="hero-content">
+        <h1>Professional Online Tools & CV Generator</h1>
+
+        <p>
+            Convert files, generate QR codes, create professional CVs,
+            and use multiple smart tools — all in one modern platform.
+        </p>
+
+        <div class="hero-buttons">
+            <a href="/form" class="primary-btn">
+                Create CV
+            </a>
+
+            <a href="#tools" class="secondary-btn">
+                Explore Tools
+            </a>
+        </div>
     </div>
 
     <div class="btn">
-      <button class="next" onclick="Increase()">❯</button>
+        <button class="prev" onclick="Decrease()">❮</button>
     </div>
+
+    <div class="btn">
+        <button class="next" onclick="Increase()">❯</button>
+    </div>
+
 </div>
 
-<div class="main-content">
-  <h2 class="section-title">✨ Featured Tools</h2>
-  <div class="tool-cards-container">
-    </div>
+<!-- TOOLS -->
+
+<div class="main-content" id="tools">
+
+    <h2 class="section-title">
+        ✨ Featured Tools
+    </h2>
+
+    <div class="tool-cards-container"></div>
+
 </div>
+
+<!-- FOOTER -->
+
+<footer>
+    <p>
+        © 2026 MyCVSite — Designed with Modern UI
+    </p>
+</footer>
 
 <script>
-    // --- Slider Script ---
+
+    // IMAGE SLIDER
+
     const images = [
         "/static/images/slider1.jpg",
         "/static/images/slider2.jpg",
@@ -70,85 +480,143 @@
         "/static/images/slider4.jpg",
         "/static/images/slider5.jpg"
     ];
-    
+
     let imgTag = document.querySelector('.slider');
     let i = 0;
 
-    function Increase() {
+    function Increase(){
         i++;
         slider();
     }
 
-    function Decrease() {
+    function Decrease(){
         i--;
         slider();
     }
 
-    function slider() {
-        if (i >= images.length) {
+    function slider(){
+
+        if(i >= images.length){
             i = 0;
-        } 
-        if (i < 0) {
+        }
+
+        if(i < 0){
             i = images.length - 1;
         }
 
-        // Set the background image and add transition class
         imgTag.style.backgroundImage = `url('${images[i]}')`;
     }
 
-    // Initialize slider on load
     document.addEventListener('DOMContentLoaded', slider);
-    
-    // Auto-advance slider
+
     setInterval(Increase, 5000);
 
+    // MOBILE NAV
 
-    // --- Navigation and Card Generation Script ---
-    document.addEventListener('DOMContentLoaded', function() {
-      const menuToggle = document.querySelector('.menu-toggle');
-      const navLinks = document.querySelector('.nav-links');
-      const toolCardsContainer = document.querySelector('.tool-cards-container');
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
 
-      // 1. Navigation Toggle Logic
-      menuToggle.addEventListener('click', function() {
-          navLinks.classList.toggle('open');
-      });
-
-      // Close menu when a link is clicked
-      navLinks.querySelectorAll('a').forEach(link => {
-          link.addEventListener('click', () => {
-              if (window.innerWidth <= 768) {
-                  navLinks.classList.remove('open');
-              }
-          });
-      });
-
-      // 2. Card Generation Logic
-      const toolLinks = [
-          { href: "jpg-to-pdf", text: "JPG to PDF", icon: "fa-solid fa-file-image", description: "Convert your image files to PDF format easily." },
-          { href: "/pdf-to-jpg", text: "PDF to JPG", icon: "fa-solid fa-file-pdf", description: "Turn PDF documents into high-quality JPEG images." },
-          { href: "/pdf-to-docx", text: "PDF to Docx", icon: "fa-solid fa-file-word", description: "Convert PDF files into editable Microsoft Word documents." },
-          { href: "/jpg-to-ico", text: "JPG to Ico", icon: "fa-solid fa-icons", description: "Create small ICO files from JPGs for favicons." },
-          { href: "/ppt-to-pdf", text: "PPT to PDF", icon: "fa-solid fa-file-powerpoint", description: "Convert PowerPoint presentations to static PDF documents." },
-          { href: "/excel-to-pdf", text: "Excel to PDF", icon: "fa-solid fa-file-excel", description: "Convert Excel spreadsheets to non-editable PDF format." },
-          { href: "/json-to-csv", text: "Json to CSV", icon: "fa-solid fa-file-csv", description: "Transform JSON data into a simple Comma Separated Values file." },
-          { href: "/qr", text: "QR Code Generator", icon: "fa-solid fa-solid fa-qrcode", description: "Generate custom QR codes for links, text, and more." },
-          { href: "/form", text: "Generate CV", icon: "fa-solid fa-file-lines", description: "Use our form to quickly create and download your professional CV." }
-      ];
-
-      toolLinks.forEach(tool => {
-        const card = document.createElement('a');
-        card.href = tool.href;
-        card.classList.add('tool-card');
-        card.innerHTML = `
-          <div class="icon-wrapper"><i class="${tool.icon}"></i></div>
-          <h3>${tool.text}</h3>
-          <p>${tool.description}</p>
-          <span class="card-link-text">Use Tool &rarr;</span>
-        `;
-        toolCardsContainer.appendChild(card);
-      });
+    menuToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('open');
     });
+
+    // TOOL CARDS
+
+    const toolCardsContainer = document.querySelector('.tool-cards-container');
+
+    const toolLinks = [
+
+        {
+            href:"/jpg-to-pdf",
+            text:"JPG to PDF",
+            icon:"fa-solid fa-file-image",
+            description:"Convert image files into professional PDF documents."
+        },
+
+        {
+            href:"/pdf-to-jpg",
+            text:"PDF to JPG",
+            icon:"fa-solid fa-file-pdf",
+            description:"Extract high quality images from PDF files."
+        },
+
+        {
+            href:"/pdf-to-docx",
+            text:"PDF to DOCX",
+            icon:"fa-solid fa-file-word",
+            description:"Convert PDFs into editable Word documents."
+        },
+
+        {
+            href:"/jpg-to-ico",
+            text:"JPG to ICO",
+            icon:"fa-solid fa-icons",
+            description:"Generate favicon ICO files for websites and apps."
+        },
+
+        {
+            href:"/ppt-to-pdf",
+            text:"PPT to PDF",
+            icon:"fa-solid fa-file-powerpoint",
+            description:"Convert presentations into portable PDF format."
+        },
+
+        {
+            href:"/excel-to-pdf",
+            text:"Excel to PDF",
+            icon:"fa-solid fa-file-excel",
+            description:"Turn Excel spreadsheets into printable PDFs."
+        },
+
+        {
+            href:"/json-to-csv",
+            text:"JSON to CSV",
+            icon:"fa-solid fa-file-csv",
+            description:"Convert structured JSON data into CSV files."
+        },
+
+        {
+            href:"/qr",
+            text:"QR Generator",
+            icon:"fa-solid fa-qrcode",
+            description:"Generate stylish QR codes instantly."
+        },
+
+        {
+            href:"/form",
+            text:"Generate CV",
+            icon:"fa-solid fa-file-lines",
+            description:"Create modern professional CVs in minutes."
+        }
+    ];
+
+    toolLinks.forEach(tool => {
+
+        const card = document.createElement('a');
+
+        card.href = tool.href;
+
+        card.classList.add('tool-card');
+
+        card.innerHTML = `
+            <div class="icon-wrapper">
+                <i class="${tool.icon}"></i>
+            </div>
+
+            <h3>${tool.text}</h3>
+
+            <p>${tool.description}</p>
+
+            <span class="card-link-text">
+                Use Tool →
+            </span>
+        `;
+
+        toolCardsContainer.appendChild(card);
+
+    });
+
 </script>
+
 </body>
 </html>
