@@ -1,24 +1,530 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
-    <title>Word to PDF Converter</title>
+
+    <meta name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+    <title>Word to PDF Converter | MyCVSite</title>
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; }
-        .container { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
-        input[type="file"] { margin: 20px 0; }
-        button { background-color: #2b579a; /* Word Blue */ color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #1e3f72; }
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, Helvetica, sans-serif;
+        }
+
+        body{
+
+            min-height:100vh;
+
+            background:
+            linear-gradient(rgba(15,23,42,0.92),
+            rgba(15,23,42,0.92)),
+            url('/static/images/slider3.jpg');
+
+            background-size:cover;
+            background-position:center;
+
+            color:white;
+        }
+
+        /* NAVBAR */
+
+        nav{
+
+            width:100%;
+
+            position:fixed;
+            top:0;
+            left:0;
+
+            z-index:1000;
+
+            backdrop-filter:blur(12px);
+
+            background:rgba(15,23,42,0.7);
+
+            border-bottom:
+            1px solid rgba(255,255,255,0.08);
+        }
+
+        .nav-container{
+
+            width:90%;
+            margin:auto;
+
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+
+            padding:18px 0;
+        }
+
+        .logo{
+
+            display:flex;
+            align-items:center;
+            gap:10px;
+
+            font-size:1.5rem;
+            font-weight:bold;
+
+            color:#38bdf8;
+        }
+
+        .logo img{
+
+            width:42px;
+            height:42px;
+
+            border-radius:50%;
+        }
+
+        .nav-links{
+
+            display:flex;
+            align-items:center;
+            gap:25px;
+        }
+
+        .nav-links a{
+
+            text-decoration:none;
+            color:white;
+
+            transition:0.3s;
+        }
+
+        .nav-links a:hover{
+            color:#38bdf8;
+        }
+
+        .generate-btn{
+
+            background:
+            linear-gradient(135deg,#38bdf8,#0ea5e9);
+
+            padding:12px 22px;
+
+            border-radius:10px;
+
+            font-weight:bold;
+
+            box-shadow:
+            0 10px 30px rgba(56,189,248,0.3);
+        }
+
+        /* MAIN */
+
+        .container{
+
+            width:90%;
+            max-width:760px;
+
+            margin:auto;
+
+            padding-top:150px;
+            padding-bottom:50px;
+        }
+
+        .converter-card{
+
+            background:rgba(15,23,42,0.72);
+
+            border:
+            1px solid rgba(255,255,255,0.08);
+
+            backdrop-filter:blur(14px);
+
+            border-radius:28px;
+
+            padding:45px;
+
+            text-align:center;
+
+            box-shadow:
+            0 25px 60px rgba(0,0,0,0.45);
+        }
+
+        .icon{
+
+            width:95px;
+            height:95px;
+
+            margin:auto;
+            margin-bottom:25px;
+
+            border-radius:24px;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+
+            background:
+            rgba(43,87,154,0.12);
+        }
+
+        .icon i{
+
+            font-size:42px;
+
+            color:#2b579a;
+        }
+
+        h1{
+
+            font-size:2.4rem;
+
+            margin-bottom:15px;
+        }
+
+        p{
+
+            color:#cbd5e1;
+
+            line-height:1.8;
+
+            margin-bottom:35px;
+        }
+
+        /* FILE INPUT */
+
+        .custom-file-upload{
+
+            width:100%;
+
+            margin-bottom:25px;
+        }
+
+        .file-label{
+
+            width:100%;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:12px;
+
+            padding:20px;
+
+            border-radius:18px;
+
+            background:#1e293b;
+
+            border:
+            2px dashed rgba(56,189,248,0.35);
+
+            color:#cbd5e1;
+
+            cursor:pointer;
+
+            transition:0.3s;
+
+            font-size:15px;
+        }
+
+        .file-label i{
+
+            font-size:22px;
+
+            color:#38bdf8;
+        }
+
+        .file-label:hover{
+
+            border-color:#38bdf8;
+
+            background:#243447;
+
+            transform:translateY(-2px);
+        }
+
+        /* BUTTON */
+
+        .submit-btn{
+
+            width:100%;
+
+            border:none;
+
+            padding:18px;
+
+            border-radius:16px;
+
+            cursor:pointer;
+
+            font-size:1rem;
+            font-weight:bold;
+
+            color:white;
+
+            transition:0.3s;
+
+            background:
+            linear-gradient(135deg,#2b579a,#1e3f72);
+
+            box-shadow:
+            0 15px 35px rgba(43,87,154,0.3);
+        }
+
+        .submit-btn:hover{
+            transform:translateY(-3px);
+        }
+
+        /* FEATURES */
+
+        .features{
+
+            display:grid;
+
+            grid-template-columns:
+            repeat(auto-fit,minmax(180px,1fr));
+
+            gap:18px;
+
+            margin-top:35px;
+        }
+
+        .feature{
+
+            background:#1e293b;
+
+            padding:18px;
+
+            border-radius:18px;
+
+            border:
+            1px solid rgba(255,255,255,0.05);
+        }
+
+        .feature i{
+
+            font-size:24px;
+
+            color:#38bdf8;
+
+            margin-bottom:12px;
+        }
+
+        .feature h3{
+
+            font-size:1rem;
+
+            margin-bottom:8px;
+        }
+
+        .feature p{
+
+            margin:0;
+
+            font-size:14px;
+
+            color:#94a3b8;
+        }
+
+        /* MOBILE */
+
+        @media(max-width:768px){
+
+            .nav-container{
+                flex-direction:column;
+                gap:15px;
+            }
+
+            .converter-card{
+                padding:30px;
+            }
+
+            h1{
+                font-size:2rem;
+            }
+        }
+
     </style>
+
 </head>
+
 <body>
+
+    <!-- NAVBAR -->
+
+    <nav>
+
+        <div class="nav-container">
+
+            <div class="logo">
+
+                <img src="https://via.placeholder.com/40" alt="">
+
+                MyCVSite
+
+            </div>
+
+            <div class="nav-links">
+
+                <a href="/">Home</a>
+
+                <a href="/form"
+                class="generate-btn">
+
+                    Generate CV
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+    <!-- MAIN -->
+
     <div class="container">
-        <h1>Convert Word to PDF</h1>
-        <form method="POST" enctype="multipart/form-data">
-            <input type="file" name="file" accept=".docx, .doc" required>
-            <br>
-            <button type="submit">Convert Now</button>
-        </form>
+
+        <div class="converter-card">
+
+            <!-- ICON -->
+
+            <div class="icon">
+
+                <i class="fa-solid fa-file-word"></i>
+
+            </div>
+
+            <!-- TITLE -->
+
+            <h1>
+                Word to PDF Converter
+            </h1>
+
+            <p>
+                Upload Word documents (.doc, .docx) and convert them
+                into professional PDF files instantly with clean formatting.
+            </p>
+
+            <!-- FORM -->
+
+            <form method="POST"
+            enctype="multipart/form-data">
+
+                <!-- FILE INPUT -->
+
+                <div class="custom-file-upload">
+
+                    <input type="file"
+                    name="file"
+                    id="wordInput"
+                    accept=".doc,.docx"
+                    required
+                    hidden>
+
+                    <label for="wordInput"
+                    class="file-label">
+
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                        <span id="fileText">
+                            Choose Word File
+                        </span>
+
+                    </label>
+
+                </div>
+
+                <!-- BUTTON -->
+
+                <button type="submit"
+                class="submit-btn">
+
+                    <i class="fa-solid fa-file-pdf"></i>
+
+                    Convert Now
+
+                </button>
+
+            </form>
+
+            <!-- FEATURES -->
+
+            <div class="features">
+
+                <div class="feature">
+
+                    <i class="fa-solid fa-bolt"></i>
+
+                    <h3>Fast Conversion</h3>
+
+                    <p>
+                        Quick and efficient document processing.
+                    </p>
+
+                </div>
+
+                <div class="feature">
+
+                    <i class="fa-solid fa-file-pdf"></i>
+
+                    <h3>PDF Output</h3>
+
+                    <p>
+                        Clean and professional PDF export.
+                    </p>
+
+                </div>
+
+                <div class="feature">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                    <h3>Secure</h3>
+
+                    <p>
+                        Your documents remain private.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
+
+<script>
+
+    // SHOW FILE NAME
+
+    const wordInput =
+    document.getElementById('wordInput');
+
+    const fileText =
+    document.getElementById('fileText');
+
+    wordInput.addEventListener('change', function(){
+
+        if(this.files.length > 0){
+
+            fileText.textContent =
+            this.files[0].name;
+
+        }else{
+
+            fileText.textContent =
+            "Choose Word File";
+
+        }
+
+    });
+
+</script>
+
 </body>
 </html>
