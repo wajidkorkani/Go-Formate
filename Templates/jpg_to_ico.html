@@ -1,22 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
-    <title>JPG to ICO Converter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>JPG to ICO Converter | MyCVSite</title>
+<link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/x-icon">
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 50px; }
-        form { margin-top: 20px; }
-        input[type="file"] { padding: 10px; }
-        button { padding: 10px 20px; cursor: pointer; background-color: #007bff; color: white; border: none; }
-        button:hover { background-color: #0056b3; }
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, Helvetica, sans-serif;
+        }
+
+        body{
+
+            min-height:100vh;
+
+            background:
+            linear-gradient(rgba(15,23,42,0.92),
+            rgba(15,23,42,0.92)),
+            url('/static/images/slider3.jpg');
+
+            background-size:cover;
+            background-position:center;
+
+            color:white;
+        }
+
+
+        /* MAIN */
+
+        .container{
+
+            width:90%;
+            max-width:700px;
+
+            margin:auto;
+
+            padding-top:150px;
+        }
+
+        .converter-card{
+
+            background:rgba(15,23,42,0.72);
+
+            border:1px solid rgba(255,255,255,0.08);
+
+            backdrop-filter:blur(14px);
+
+            border-radius:28px;
+
+            padding:45px;
+
+            text-align:center;
+
+            box-shadow:
+            0 25px 60px rgba(0,0,0,0.45);
+        }
+
+        .icon{
+
+            width:90px;
+            height:90px;
+
+            margin:auto;
+            margin-bottom:25px;
+
+            border-radius:24px;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+
+            background:
+            rgba(56,189,248,0.12);
+        }
+
+        .icon i{
+
+            font-size:40px;
+            color:#38bdf8;
+        }
+
+        h1{
+
+            font-size:2.3rem;
+
+            margin-bottom:15px;
+        }
+
+        p{
+
+            color:#cbd5e1;
+
+            line-height:1.8;
+
+            margin-bottom:35px;
+        }
+
+        /* FILE INPUT */
+
+        .custom-file-upload{
+            width:100%;
+            margin-bottom:25px;
+        }
+
+        .file-label{
+
+            width:100%;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:12px;
+
+            padding:20px;
+
+            border-radius:18px;
+
+            background:#1e293b;
+
+            border:2px dashed rgba(56,189,248,0.35);
+
+            color:#cbd5e1;
+
+            cursor:pointer;
+
+            transition:0.3s;
+
+            font-size:15px;
+        }
+
+        .file-label i{
+
+            font-size:22px;
+            color:#38bdf8;
+        }
+
+        .file-label:hover{
+
+            border-color:#38bdf8;
+
+            background:#243447;
+
+            transform:translateY(-2px);
+        }
+
+        /* BUTTON */
+
+        .submit-btn{
+
+            width:100%;
+
+            border:none;
+
+            padding:18px;
+
+            border-radius:16px;
+
+            cursor:pointer;
+
+            font-size:1rem;
+            font-weight:bold;
+
+            color:white;
+
+            transition:0.3s;
+
+            background:
+            linear-gradient(135deg,#38bdf8,#0ea5e9);
+
+            box-shadow:
+            0 15px 35px rgba(56,189,248,0.3);
+        }
+
+        .submit-btn:hover{
+            transform:translateY(-3px);
+        }
+
+        /* MOBILE */
+
+        @media(max-width:768px){
+
+            .nav-container{
+                flex-direction:column;
+                gap:15px;
+            }
+
+            .converter-card{
+                padding:30px;
+            }
+
+            h1{
+                font-size:1.9rem;
+            }
+        }
+
     </style>
+
 </head>
+
 <body>
-    <h2>Upload JPG to Convert to ICO</h2>
-    <form method="POST" enctype="multipart/form-data" action="/jpgtoico">
-        <input type="file" name="image" accept=".jpg, .jpeg, .png" required>
-        <br><br>
-        <button type="submit">Convert & Download</button>
-    </form>
+
+    <!-- NAVBAR -->
+
+{% include 'nav.html' %}
+
+    <!-- MAIN -->
+
+    <div class="container">
+
+        <div class="converter-card">
+
+            <div class="icon">
+
+                <i class="fa-solid fa-icons"></i>
+
+            </div>
+
+            <h1>
+                JPG to ICO Converter
+            </h1>
+
+            <p>
+                Upload your JPG, JPEG, or PNG image and instantly
+                convert it into an ICO file for websites,
+                applications, and favicons.
+            </p>
+
+            <!-- FORM -->
+
+            <form method="POST"
+            enctype="multipart/form-data"
+            action="/jpgtoico">
+
+                <!-- FILE -->
+
+                <div class="custom-file-upload">
+
+                    <input type="file"
+                    name="image"
+                    id="imageInput"
+                    accept=".jpg,.jpeg,.png"
+                    required
+                    hidden>
+
+                    <label for="imageInput"
+                    class="file-label">
+
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                        <span id="fileText">
+                            Choose Image File
+                        </span>
+
+                    </label>
+
+                </div>
+
+                <!-- BUTTON -->
+
+                <button type="submit"
+                class="submit-btn">
+
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+
+                    Convert & Download
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+<script>
+
+    // SHOW FILE NAME
+
+    const imageInput =
+    document.getElementById('imageInput');
+
+    const fileText =
+    document.getElementById('fileText');
+
+    imageInput.addEventListener('change', function(){
+
+        if(this.files.length > 0){
+
+            fileText.textContent =
+            this.files[0].name;
+
+        }else{
+
+            fileText.textContent =
+            "Choose Image File";
+
+        }
+
+    });
+
+</script>
+
 </body>
 </html>
