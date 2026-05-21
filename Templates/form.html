@@ -1,72 +1,378 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>CV Form</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='form.css') }}">
+
+  <title>Generate Professional CV</title>
+
+<link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/x-icon">
+
+  <link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body{
+      background:
+      linear-gradient(rgba(15,23,42,0.92),
+      rgba(15,23,42,0.92)),
+      url('/static/images/slider1.jpg');
+
+      background-size:cover;
+      background-position:center;
+      min-height:100vh;
+      color:white;
+    }
+
+
+    /* MAIN */
+
+    .container{
+      width:90%;
+      max-width:1000px;
+
+      margin:auto;
+      padding-top:130px;
+      padding-bottom:60px;
+    }
+
+    .cv-form{
+      background:rgba(15,23,42,0.75);
+      border:1px solid rgba(255,255,255,0.08);
+
+      backdrop-filter: blur(14px);
+
+      border-radius:28px;
+
+      padding:45px;
+
+      box-shadow:0 25px 60px rgba(0,0,0,0.45);
+    }
+
+    .form-header{
+      text-align:center;
+      margin-bottom:40px;
+    }
+
+    .form-header h1{
+      font-size:2.8rem;
+      margin-bottom:12px;
+    }
+
+    .form-header p{
+      color:#cbd5e1;
+      line-height:1.7;
+    }
+
+    .section{
+      margin-bottom:40px;
+    }
+
+    .section-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+
+      margin-bottom:18px;
+
+      font-size:1.2rem;
+      color:#38bdf8;
+    }
+
+    .input-group{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+      gap:20px;
+    }
+
+    input,
+    textarea{
+      width:100%;
+
+      padding:16px 18px;
+
+      border:none;
+      border-radius:14px;
+
+      background:#1e293b;
+      color:white;
+
+      outline:none;
+
+      transition:0.3s;
+      font-size:15px;
+    }
+
+    textarea{
+      resize:vertical;
+    }
+
+    input:focus,
+    textarea:focus{
+      border:1px solid #38bdf8;
+      box-shadow:0 0 0 4px rgba(56,189,248,0.15);
+    }
+
+    input::placeholder,
+    textarea::placeholder{
+      color:#94a3b8;
+    }
+
+    .full-width{
+      margin-top:20px;
+    }
+
+    .file-upload{
+      background:#1e293b;
+      padding:16px;
+      border-radius:14px;
+      color:#94a3b8;
+    }
+
+    .submit{
+      width:100%;
+      border:none;
+
+      padding:18px;
+
+      border-radius:16px;
+
+      font-size:1rem;
+      font-weight:bold;
+
+      cursor:pointer;
+
+      background:linear-gradient(135deg,#38bdf8,#0ea5e9);
+
+      color:white;
+
+      transition:0.3s;
+
+      margin-top:10px;
+
+      box-shadow:0 15px 35px rgba(56,189,248,0.3);
+    }
+
+    .submit:hover{
+      transform:translateY(-3px);
+    }
+
+    /* MOBILE */
+
+    @media(max-width:768px){
+
+      .nav-container{
+        flex-direction:column;
+        gap:15px;
+      }
+
+      .form-header h1{
+        font-size:2rem;
+      }
+
+      .cv-form{
+        padding:25px;
+      }
+    }
+
+  </style>
 </head>
+
 <body>
 
-  <nav>
-    <div class="logo">
-      <img src="https://via.placeholder.com/40" alt="Logo" style="vertical-align: middle; border-radius: 50%;">
-      MyCVSite
-    </div>
-    <div class="nav-links">
-      <a href="/">Home</a>
-      <a href="/form" class="generate-btn">Generate CV</a>
-    </div>
-  </nav>
+  <!-- NAVBAR -->
+
+{% include 'nav.html' %}
+  <!-- MAIN -->
 
   <main class="container">
 
-    <form action="/generate-pdf" method="post" enctype="multipart/form-data" class="cv-form">
+    <form action="/generate-pdf"
+    method="post"
+    enctype="multipart/form-data"
+    class="cv-form">
 
-      <h2>CV Information</h2>
+      <!-- HEADER -->
 
-      <input type="text" name="name" placeholder="Full Name" required>
+      <div class="form-header">
 
-      <input type="text" name="title" placeholder="Job Title (e.g. Software Engineer)" required>
+        <h1>
+          Create Professional CV
+        </h1>
 
-      <input type="file" name="photo" accept="image/*">
+        <p>
+          Fill in your details and generate a clean,
+          modern, and professional CV instantly.
+        </p>
 
-      <textarea name="profile_text" rows="4" placeholder="Profile Summary (Short paragraph about yourself)"></textarea>
+      </div>
 
-      <textarea name="experiences" rows="8"
-        placeholder="WORK EXPERIENCE (Format Example):
+      <!-- PERSONAL -->
 
-Senior Software Developer
+      <div class="section">
+
+        <div class="section-title">
+          <i class="fa-solid fa-user"></i>
+          Personal Information
+        </div>
+
+        <div class="input-group">
+
+          <input type="text"
+          name="name"
+          placeholder="Full Name"
+          required>
+
+          <input type="text"
+          name="title"
+          placeholder="Job Title"
+          required>
+
+          <input type="text"
+          name="phone"
+          placeholder="Phone Number">
+
+          <input type="email"
+          name="email"
+          placeholder="Email Address">
+
+        </div>
+
+        <div class="full-width">
+
+          <input type="text"
+          name="address"
+          placeholder="Full Address">
+
+        </div>
+
+      </div>
+
+      <!-- PHOTO -->
+
+      <div class="section">
+
+        <div class="section-title">
+          <i class="fa-solid fa-image"></i>
+          Upload Photo
+        </div>
+
+        <input type="file"
+        name="photo"
+        accept="image/*"
+        class="file-upload">
+
+      </div>
+
+      <!-- PROFILE -->
+
+      <div class="section">
+
+        <div class="section-title">
+          <i class="fa-solid fa-address-card"></i>
+          Profile Summary
+        </div>
+
+        <textarea
+        name="profile_text"
+        rows="5"
+        placeholder="Write a short professional summary about yourself..."></textarea>
+
+      </div>
+
+      <!-- EXPERIENCE -->
+
+      <div class="section">
+
+        <div class="section-title">
+          <i class="fa-solid fa-briefcase"></i>
+          Work Experience
+        </div>
+
+        <textarea
+        name="experiences"
+        rows="10"
+        placeholder="Senior Software Developer
 Company – Jan 2022 - Dec 2023
 - Led a team of engineers
-- Developed and maintained backend systems
+- Developed backend systems"></textarea>
 
-Web Developer
-Company – Jan 2021 - Dec 2021
-- Built frontend UI
-- Improved website performance"></textarea>
+      </div>
 
-      <textarea name="education" rows="4"
-        placeholder="Education (One per line):
-Masters in Software Engineering - XYZ University (2019-2020)
-BSc Computer Science - XYZ University (2015-2018)"></textarea>
+      <!-- EDUCATION -->
 
-      <input type="text" name="skills" placeholder="Skills (comma separated, e.g. Python, Java, SQL)">
+      <div class="section">
 
-      <input type="text" name="languages" placeholder="Languages (comma separated, e.g. English, Urdu)">
+        <div class="section-title">
+          <i class="fa-solid fa-graduation-cap"></i>
+          Education
+        </div>
 
-      <input type="text" name="hobbies" placeholder="Hobbies (comma separated, e.g. Writing, Cricket, Music)">
+        <textarea
+        name="education"
+        rows="5"
+        placeholder="BS Computer Science - XYZ University (2020-2024)"></textarea>
 
-      <input type="text" name="phone" placeholder="Phone Number">
+      </div>
 
-      <input type="email" name="email" placeholder="Email Address">
+      <!-- SKILLS -->
 
-      <input type="text" name="address" placeholder="Full Address">
+      <div class="section">
 
-      <button type="submit" class="submit">Generate</button>
+        <div class="section-title">
+          <i class="fa-solid fa-code"></i>
+          Skills & Languages
+        </div>
+
+        <div class="input-group">
+
+          <input type="text"
+          name="skills"
+          placeholder="Skills (Python, Java, SQL)">
+
+          <input type="text"
+          name="languages"
+          placeholder="Languages (English, Urdu)">
+
+        </div>
+
+      </div>
+
+      <!-- HOBBIES -->
+
+      <div class="section">
+
+        <div class="section-title">
+          <i class="fa-solid fa-heart"></i>
+          Hobbies & Interests
+        </div>
+
+        <input type="text"
+        name="hobbies"
+        placeholder="Writing, Cricket, Music">
+
+      </div>
+
+      <!-- BUTTON -->
+
+      <button type="submit" class="submit">
+
+        <i class="fa-solid fa-file-arrow-down"></i>
+        Generate CV
+
+      </button>
 
     </form>
 
   </main>
+
 </body>
 </html>

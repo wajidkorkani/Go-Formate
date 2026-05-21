@@ -1,63 +1,417 @@
 <!doctype html>
 <html lang="en">
 <head>
+
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>JPG to PDF Converter</title>
+
+    <meta name="viewport"
+    content="width=device-width, initial-scale=1">
+
+    <title>JPG to PDF Converter | MyCVSite</title>
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/x-icon">
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background-color: #f4f4f4;
-            text-align: center;
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, Helvetica, sans-serif;
         }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+        body{
+
+            min-height:100vh;
+
+            background:
+            linear-gradient(rgba(15,23,42,0.92),
+            rgba(15,23,42,0.92)),
+            url('/static/images/slider4.jpg');
+
+            background-size:cover;
+            background-position:center;
+
+            color:white;
         }
-        h1 {
-            color: #333;
+
+        /* MAIN */
+
+        .container{
+
+            width:90%;
+            max-width:720px;
+
+            margin:auto;
+
+            padding-top:150px;
         }
-        input[type="file"] {
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 100%;
-            box-sizing: border-box;
+
+        .converter-card{
+
+            background:rgba(15,23,42,0.72);
+
+            border:
+            1px solid rgba(255,255,255,0.08);
+
+            backdrop-filter:blur(14px);
+
+            border-radius:28px;
+
+            padding:45px;
+
+            text-align:center;
+
+            box-shadow:
+            0 25px 60px rgba(0,0,0,0.45);
         }
-        input[type="submit"] {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
-            width: 100%;
+
+        .icon{
+
+            width:95px;
+            height:95px;
+
+            margin:auto;
+            margin-bottom:25px;
+
+            border-radius:24px;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+
+            background:
+            rgba(56,189,248,0.12);
         }
-        input[type="submit"]:hover {
-            background-color: #0056b3;
+
+        .icon i{
+
+            font-size:42px;
+
+            color:#38bdf8;
         }
-        p {
-            color: #666;
+
+        h1{
+
+            font-size:2.4rem;
+
+            margin-bottom:15px;
         }
+
+        p{
+
+            color:#cbd5e1;
+
+            line-height:1.8;
+
+            margin-bottom:35px;
+        }
+
+        /* FILE INPUT */
+
+        .custom-file-upload{
+
+            width:100%;
+
+            margin-bottom:25px;
+        }
+
+        .file-label{
+
+            width:100%;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:12px;
+
+            padding:20px;
+
+            border-radius:18px;
+
+            background:#1e293b;
+
+            border:
+            2px dashed rgba(56,189,248,0.35);
+
+            color:#cbd5e1;
+
+            cursor:pointer;
+
+            transition:0.3s;
+
+            font-size:15px;
+        }
+
+        .file-label i{
+
+            font-size:22px;
+
+            color:#38bdf8;
+        }
+
+        .file-label:hover{
+
+            border-color:#38bdf8;
+
+            background:#243447;
+
+            transform:translateY(-2px);
+        }
+
+        /* BUTTON */
+
+        .submit-btn{
+
+            width:100%;
+
+            border:none;
+
+            padding:18px;
+
+            border-radius:16px;
+
+            cursor:pointer;
+
+            font-size:1rem;
+            font-weight:bold;
+
+            color:white;
+
+            transition:0.3s;
+
+            background:
+            linear-gradient(135deg,#ef4444,#dc2626);
+
+            box-shadow:
+            0 15px 35px rgba(239,68,68,0.3);
+        }
+
+        .submit-btn:hover{
+            transform:translateY(-3px);
+        }
+
+        /* FEATURES */
+
+        .features{
+
+            display:grid;
+            grid-template-columns:
+            repeat(auto-fit,minmax(180px,1fr));
+
+            gap:18px;
+
+            margin-top:35px;
+        }
+
+        .feature{
+
+            background:#1e293b;
+
+            padding:18px;
+
+            border-radius:18px;
+
+            border:
+            1px solid rgba(255,255,255,0.05);
+        }
+
+        .feature i{
+
+            font-size:24px;
+
+            color:#38bdf8;
+
+            margin-bottom:12px;
+        }
+
+        .feature h3{
+
+            font-size:1rem;
+
+            margin-bottom:8px;
+        }
+
+        .feature p{
+
+            margin:0;
+
+            font-size:14px;
+
+            color:#94a3b8;
+        }
+
+        /* MOBILE */
+
+        @media(max-width:768px){
+
+            .nav-container{
+                flex-direction:column;
+                gap:15px;
+            }
+
+            .converter-card{
+                padding:30px;
+            }
+
+            h1{
+                font-size:2rem;
+            }
+        }
+
     </style>
+
 </head>
+
 <body>
+
+    <!-- NAVBAR -->
+
+{% include 'nav.html' %}
+    <!-- MAIN -->
+
     <div class="container">
-        <h1>📸 JPG to PDF Converter 📄</h1>
-        <p>Select a JPG or JPEG file to convert and download as a PDF.</p>
-        
-        <form method="POST" enctype="multipart/form-data" action="jpgtopdf">
-            <input type="file" name="file" accept=".jpg, .jpeg" required>
-            <input type="submit" value="Convert & Download PDF">
-        </form>
+
+        <div class="converter-card">
+
+            <!-- ICON -->
+
+            <div class="icon">
+
+                <i class="fa-solid fa-file-pdf"></i>
+
+            </div>
+
+            <!-- TITLE -->
+
+            <h1>
+                JPG to PDF Converter
+            </h1>
+
+            <p>
+                Upload JPG or JPEG images and instantly
+                convert them into professional PDF files
+                with high quality output.
+            </p>
+
+            <!-- FORM -->
+
+            <form method="POST"
+            enctype="multipart/form-data"
+            action="jpgtopdf">
+
+                <!-- FILE INPUT -->
+
+                <div class="custom-file-upload">
+
+                    <input type="file"
+                    name="file"
+                    id="imageInput"
+                    accept=".jpg,.jpeg"
+                    required
+                    hidden>
+
+                    <label for="imageInput"
+                    class="file-label">
+
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                        <span id="fileText">
+                            Choose JPG Image
+                        </span>
+
+                    </label>
+
+                </div>
+
+                <!-- BUTTON -->
+
+                <button type="submit"
+                class="submit-btn">
+
+                    <i class="fa-solid fa-file-arrow-down"></i>
+
+                    Convert & Download PDF
+
+                </button>
+
+            </form>
+
+            <!-- FEATURES -->
+
+            <div class="features">
+
+                <div class="feature">
+
+                    <i class="fa-solid fa-bolt"></i>
+
+                    <h3>Fast Conversion</h3>
+
+                    <p>
+                        Convert images to PDF instantly.
+                    </p>
+
+                </div>
+
+                <div class="feature">
+
+                    <i class="fa-solid fa-shield"></i>
+
+                    <h3>Secure Files</h3>
+
+                    <p>
+                        Your uploaded files stay private.
+                    </p>
+
+                </div>
+
+                <div class="feature">
+
+                    <i class="fa-solid fa-medal"></i>
+
+                    <h3>High Quality</h3>
+
+                    <p>
+                        Preserve image quality in PDF.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
+
+<script>
+
+    // SHOW FILE NAME
+
+    const imageInput =
+    document.getElementById('imageInput');
+
+    const fileText =
+    document.getElementById('fileText');
+
+    imageInput.addEventListener('change', function(){
+
+        if(this.files.length > 0){
+
+            fileText.textContent =
+            this.files[0].name;
+
+        }else{
+
+            fileText.textContent =
+            "Choose JPG Image";
+
+        }
+
+    });
+
+</script>
+
 </body>
 </html>
