@@ -1,52 +1,352 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>PDF to DOCX Converter</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+    <title>PDF to DOCX Converter | MyCVSite</title>
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/x-icon">
+
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, Helvetica, sans-serif;
+        }
+
+        body{
+
+            min-height:100vh;
+
+            background:
+            linear-gradient(rgba(15,23,42,0.92),
+            rgba(15,23,42,0.92)),
+            url('/static/images/slider4.jpg');
+
+            background-size:cover;
+            background-position:center;
+
+            color:white;
+
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            padding:20px;
+        }
+
+        /* CARD */
+
+        .container{
+
+            width:100%;
+            max-width:650px;
+
+            background:rgba(15,23,42,0.75);
+
+            border:1px solid rgba(255,255,255,0.08);
+
+            backdrop-filter:blur(14px);
+
+            border-radius:28px;
+
+            padding:40px;
+
+            box-shadow:0 25px 60px rgba(0,0,0,0.45);
+        }
+
+        .top-bar{
+
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+
+            margin-bottom:20px;
+        }
+
+        .title{
+
+            font-size:1.8rem;
+            font-weight:bold;
+
+            display:flex;
+            align-items:center;
+            gap:10px;
+        }
+
+        .title i{
+            color:#6366f1;
+        }
+
+        .back{
+
+            text-decoration:none;
+
+            color:#a5b4fc;
+
+            font-size:14px;
+
+            transition:0.3s;
+        }
+
+        .back:hover{
+            color:#ffffff;
+        }
+
+        p.desc{
+
+            color:#cbd5e1;
+
+            line-height:1.7;
+
+            margin-bottom:25px;
+        }
+
+        /* FLASH */
+
+        .flash{
+
+            padding:14px;
+
+            border-radius:12px;
+
+            margin-bottom:15px;
+
+            font-size:14px;
+        }
+
+        .flash.error{
+            background:rgba(239,68,68,0.15);
+            color:#fecaca;
+        }
+
+        .flash.success{
+            background:rgba(34,197,94,0.15);
+            color:#bbf7d0;
+        }
+
+        /* FILE INPUT */
+
+        .file-box{
+
+            margin-bottom:25px;
+        }
+
+        .file-label{
+
+            width:100%;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:12px;
+
+            padding:20px;
+
+            border-radius:18px;
+
+            background:#1e293b;
+
+            border:2px dashed rgba(99,102,241,0.4);
+
+            color:#cbd5e1;
+
+            cursor:pointer;
+
+            transition:0.3s;
+        }
+
+        .file-label:hover{
+
+            background:#243447;
+
+            border-color:#6366f1;
+
+            transform:translateY(-2px);
+        }
+
+        .file-label i{
+            color:#6366f1;
+            font-size:20px;
+        }
+
+        /* BUTTON */
+
+        .btn{
+
+            width:100%;
+
+            padding:16px;
+
+            border:none;
+
+            border-radius:16px;
+
+            cursor:pointer;
+
+            font-size:1rem;
+
+            font-weight:bold;
+
+            color:white;
+
+            background:linear-gradient(135deg,#6366f1,#4f46e5);
+
+            transition:0.3s;
+
+            box-shadow:0 15px 35px rgba(99,102,241,0.3);
+        }
+
+        .btn:hover{
+            transform:translateY(-3px);
+        }
+
+        /* NOTE */
+
+        .note{
+
+            font-size:12px;
+
+            color:#94a3b8;
+
+            text-align:center;
+
+            margin-top:18px;
+        }
+
     </style>
+
 </head>
-<body class="flex items-center justify-center min-h-screen">
-    <div class="max-w-lg w-full bg-white p-8 rounded-xl shadow-2xl">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-3xl font-bold text-gray-800">📄 PDF to DOCX Converter</h1>
-            <a href="{{ url_for('home') }}" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">← Back to Tools</a>
+
+<body>
+
+    {% include 'nav.html' %}
+
+    <div class="container">
+
+        <!-- HEADER -->
+
+        <div class="top-bar">
+
+            <div class="title">
+
+                <i class="fa-solid fa-file-word"></i>
+
+                PDF to DOCX
+
+            </div>
+
+            <a href="{{ url_for('home') }}"
+            class="back">
+
+                ← Back to Tools
+
+            </a>
+
         </div>
-        
-        <p class="text-gray-600 mb-6">Upload your PDF file below. We will convert it to an editable DOCX (Word) document.</p>
-        
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
+
+        <!-- DESCRIPTION -->
+
+        <p class="desc">
+            Upload a PDF file and convert it into an editable Word
+            document (DOCX) while preserving structure as much as possible.
+        </p>
+
+        <!-- FLASH -->
+
+        {% with messages =
+        get_flashed_messages(with_categories=true) %}
+
           {% if messages %}
+
             {% for category, message in messages %}
-              <div class="p-3 mb-4 rounded-lg text-sm {% if category == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+
+              <div class="flash {{ category }}">
+
                 {{ message }}
+
               </div>
+
             {% endfor %}
+
           {% endif %}
+
         {% endwith %}
 
-        <form method="POST" enctype="multipart/form-data" class="space-y-6">
-            
-            <label class="block">
-                <span class="sr-only">Choose PDF file</span>
-                <input type="file" name="file" accept=".pdf" required 
-                       class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 p-2.5 
-                              file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold
-                              file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-            </label>
-            
-            <button type="submit" 
-                    class="w-full px-4 py-3 text-white font-semibold bg-indigo-600 rounded-lg shadow-md 
-                           hover:bg-indigo-700 transition duration-300 transform hover:scale-[1.01]">
+        <!-- FORM -->
+
+        <form method="POST"
+        enctype="multipart/form-data">
+
+            <div class="file-box">
+
+                <input type="file"
+                id="pdfInput"
+                name="file"
+                accept=".pdf"
+                required
+                hidden>
+
+                <label for="pdfInput"
+                class="file-label">
+
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                    <span id="fileText">
+                        Choose PDF File
+                    </span>
+
+                </label>
+
+            </div>
+
+            <button type="submit"
+            class="btn">
+
                 Convert & Download DOCX
+
             </button>
+
         </form>
-        
-        <p class="text-xs text-gray-400 mt-6 text-center">Conversion quality depends on the complexity of the original PDF layout.</p>
+
+        <div class="note">
+            Conversion quality depends on PDF structure complexity.
+        </div>
+
     </div>
+
+<script>
+
+    const pdfInput =
+    document.getElementById('pdfInput');
+
+    const fileText =
+    document.getElementById('fileText');
+
+    pdfInput.addEventListener('change', function(){
+
+        if(this.files.length > 0){
+
+            fileText.textContent =
+            this.files[0].name;
+
+        }else{
+
+            fileText.textContent =
+            "Choose PDF File";
+
+        }
+
+    });
+
+</script>
+
 </body>
 </html>
