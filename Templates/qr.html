@@ -9,7 +9,10 @@
 
     <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-<link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/x-icon">
+
+    <link rel="shortcut icon"
+    href="{{ url_for('static', filename='images/logo.png') }}"
+    type="image/x-icon">
 
     <style>
 
@@ -33,7 +36,6 @@
 
             color:white;
         }
-
 
         /* MAIN */
 
@@ -191,13 +193,9 @@
             border-radius:12px;
 
             font-weight:bold;
-
-            display:inline-block;
         }
 
-
         /* RESULT */
-
 
         .file-label{
 
@@ -241,6 +239,7 @@
 
             transform:translateY(-2px);
         }
+
         .scan-result{
             margin-top:25px;
 
@@ -294,130 +293,127 @@
 
 <body>
 
-    <!-- NAVBAR -->
-
 {% include 'nav.html' %}
-    <!-- MAIN -->
 
-    <div class="container">
+<div class="container">
 
-        <!-- HERO -->
+    <!-- HERO -->
 
-        <div class="hero">
+    <div class="hero">
 
-            <h1>
-                Smart QR Code Tool
-            </h1>
+        <h1>
+            Smart QR Code Tool
+        </h1>
 
-            <p>
-                Generate stylish QR codes instantly or scan existing QR
-                code images directly from your device.
-            </p>
+        <p>
+            Generate stylish QR codes instantly or scan existing QR
+            code images directly from your device.
+        </p>
 
-        </div>
+    </div>
 
-        <!-- TOOLS -->
+    <!-- TOOLS -->
 
-        <div class="tool-wrapper">
+    <div class="tool-wrapper">
 
-            <!-- GENERATE -->
+        <!-- GENERATE QR -->
 
-            <div class="card">
+        <div class="card">
 
-                <div class="card-title">
-                    <i class="fa-solid fa-qrcode"></i>
-                    Generate QR Code
-                </div>
+            <div class="card-title">
+                <i class="fa-solid fa-qrcode"></i>
+                Generate QR Code
+            </div>
 
-                <form id="generateForm">
+            <form id="generateForm">
 
-                    <input type="text"
-                    class="input-box"
-                    id="qrText"
-                    placeholder="Enter URL or Text..."
-                    required>
+                <input type="text"
+                class="input-box"
+                id="qrText"
+                placeholder="Enter URL or Text..."
+                required>
 
-                    <button type="submit"
-                    class="btn generate">
+                <button type="submit"
+                class="btn generate">
 
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
-                        Generate QR
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    Generate QR
 
-                    </button>
+                </button>
 
-                </form>
+            </form>
 
-                <div style="text-align:center;">
+            <div style="text-align:center;">
 
-                    <img id="generatedImage"
-                    class="qr-display"
-                    alt="QR Code">
+                <img id="generatedImage"
+                class="qr-display"
+                alt="QR Code">
 
-                    <br>
+                <br>
 
-                    <a id="downloadLink"
-                    class="download-btn"
-                    download="qr_code.png">
+                <a id="downloadLink"
+                class="download-btn"
+                download="qr_code.png">
 
-                        <i class="fa-solid fa-download"></i>
-                        Download QR
+                    <i class="fa-solid fa-download"></i>
+                    Download QR
 
-                    </a>
-
-                </div>
+                </a>
 
             </div>
 
-            <!-- SCAN -->
+        </div>
 
-            <div class="card">
+        <!-- SCAN QR -->
 
-                <div class="card-title">
-                    <i class="fa-solid fa-camera"></i>
-                    Scan QR Code
-                </div>
+        <div class="card">
 
-                <form id="scanForm"
-                enctype="multipart/form-data">
+            <div class="card-title">
+                <i class="fa-solid fa-camera"></i>
+                Scan QR Code
+            </div>
+
+            <form id="scanForm"
+            enctype="multipart/form-data">
 
                 <input type="file"
-                id="pdfInput"
-                name="file"
-                accept=".pdf"
+                id="qrFile"
+                name="qr_image"
+                accept="image/*"
                 required
                 hidden>
 
-                <label for="pdfInput"
+                <label for="qrFile"
                 class="file-label">
 
                     <i class="fa-solid fa-cloud-arrow-up"></i>
 
                     <span id="fileText">
-                        Choose PDF File
+                        Choose QR Image
                     </span>
 
                 </label>
 
-                <br>
+                <br><br>
 
-                    <button type="submit"
-                    class="btn scan">
+                <button type="submit"
+                class="btn scan">
 
-                        <i class="fa-solid fa-expand"></i>
-                        Scan QR
+                    <i class="fa-solid fa-expand"></i>
+                    Scan QR
 
-                    </button>
+                </button>
 
-                </form>
+            </form>
 
-                <div id="scanResult"
-                class="scan-result"></div>
-
-            </div>
+            <div id="scanResult"
+            class="scan-result"></div>
 
         </div>
 
     </div>
+
+</div>
 
 <script>
 
@@ -479,6 +475,19 @@
 
     });
 
+    // SHOW FILE NAME
+
+    document.getElementById('qrFile')
+    .addEventListener('change', function(){
+
+        const fileName =
+        this.files[0]?.name || 'Choose QR Image';
+
+        document.getElementById('fileText')
+        .innerText = fileName;
+
+    });
+
     // SCAN QR
 
     document.getElementById('scanForm')
@@ -488,6 +497,10 @@
 
         const fileInput =
         document.getElementById('qrFile');
+
+        if(!fileInput.files.length){
+            return;
+        }
 
         const formData =
         new FormData();
