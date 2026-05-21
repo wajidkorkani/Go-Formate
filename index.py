@@ -27,9 +27,37 @@ from pdf2docx import Converter
 import pandas as pd
 import json
 import fitz
+import tempfile
+from flask import after_this_request
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_for_flash'
+
+import os
+import time
+import threading
+
+def delete_file_later(filepath, delay=120):
+    """
+    Deletes a file after a delay.
+    
+    delay=120 means 2 minutes
+    """
+
+    def delete():
+
+        time.sleep(delay)
+
+        try:
+
+            if os.path.exists(filepath):
+                os.remove(filepath)
+                print(f"Deleted: {filepath}")
+
+        except Exception as e:
+            print(f"Delete Error: {e}")
+
+    threading.Thread(target=delete).start()
 
 def make_circular_image(file_stream, size_px):
     """Crops an image into a circle, resizes it, and returns a ReportLab ImageReader."""
@@ -372,6 +400,7 @@ def jpg_to_pdf():
 
 @app.route('/jpgtopdf', methods=['POST'])
 def jpgToPdf():
+    
     if request.method == 'POST':
         # Check if the post request has the file part
         if 'file' not in request.files:
@@ -398,12 +427,15 @@ def jpgToPdf():
             # 3. Perform the conversion
             if convert_jpg_to_pdf(jpg_filepath, pdf_filepath):
                 # 4. Send the converted PDF for download
-                return send_file(
+                convertedFile = send_file(
                     pdf_filepath,
                     mimetype='application/pdf',
                     as_attachment=True,
-                    download_name=pdf_filename
+                    download_name=pdf_filename   
                 )
+                delete_file_later(pdf_filepath)
+                delete_file_later(jpg_filepath)
+                return convertedFile
             else:
                 return "Error during conversion.", 500
 
@@ -417,87 +449,71 @@ def allowed_file(filename):
 
 def convert_pdf_to_jpg_and_zip(pdf_path, temp_dir, zip_filepath):
 
+    """
+    Converts PDF pages to JPG images and stores them in a ZIP file.
+    Temporary JPG files are deleted immediately after zipping.
+    """
+
     try:
+
         pdf_document = fitz.open(pdf_path)
 
         base_filename = os.path.splitext(
             os.path.basename(pdf_path)
         )[0]
 
-        with zipfile.ZipFile(zip_filepath, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        with zipfile.ZipFile(
+            zip_filepath,
+            'w',
+            zipfile.ZIP_DEFLATED
+        ) as zipf:
 
             for page_num in range(len(pdf_document)):
 
                 page = pdf_document.load_page(page_num)
 
-                pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
+                # Better quality
+                pix = page.get_pixmap(
+                    matrix=fitz.Matrix(2, 2)
+                )
 
-                output_filename = f"{base_filename}_page_{page_num + 1}.jpg"
+                output_filename = (
+                    f"{base_filename}_page_{page_num + 1}.jpg"
+                )
 
                 output_filepath = os.path.join(
                     temp_dir,
                     output_filename
                 )
 
+                # Save temporary JPG
                 pix.save(output_filepath)
 
+                # Add to ZIP
                 zipf.write(
                     output_filepath,
                     arcname=output_filename
                 )
+                delete_file_later(output_filepath)
 
-                os.remove(output_filepath)
+                # Delete JPG immediately
+                if os.path.exists(output_filepath):
+                    os.remove(output_filepath)
 
         pdf_document.close()
 
         return True
 
     except Exception as e:
+
         print(f"Conversion error: {e}")
-        flash(f"❌ Conversion failed: {e}", "error")
+
+        flash(
+            f"❌ Conversion failed: {e}",
+            "error"
+        )
+
         return False
-    """
-    Converts all pages of a PDF to JPGs and zips them.
-
-    :param pdf_path: Path to the input PDF.
-    :param temp_dir: Temporary directory to save the individual JPGs.
-    :param zip_filepath: Path where the final zip file will be saved.
-    :returns: True on success, False on failure.
-    """
-    try:
-        # 1. Convert PDF pages to a list of Pillow Image objects
-        # Using 200 DPI for a good balance of quality and file size
-        images = convert_from_path(pdf_path, dpi=200)
-
-        # 2. Prepare for zipping
-        base_filename = os.path.splitext(os.path.basename(pdf_path))[0]
-        
-        with zipfile.ZipFile(zip_filepath, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            # 3. Iterate, save each image, and add it to the zip file
-            for i, image in enumerate(images):
-                output_filename = f"{base_filename}_page_{i + 1}.jpg"
-                output_filepath = os.path.join(temp_dir, output_filename)
-                
-                # Save the image (quality=90 for high quality JPEG)
-                image.save(output_filepath, 'JPEG', quality=90)
-                
-                # Add the saved JPG to the zip file
-                zipf.write(output_filepath, arcname=output_filename)
-                
-                # Clean up the individual JPG file immediately
-                os.remove(output_filepath)
-        
-        return True
-    
-    except Exception as e:
-        print(f"Conversion or Zipping error: {e}")
-        # A common error is Poppler not being found.
-        if "No such file or directory" in str(e):
-            flash("❌ Conversion Failed! Poppler utility might not be installed or configured correctly.", "error")
-        else:
-            flash(f"❌ Conversion failed due to an unexpected error: {e}", "error")
-        return False
-
 
 
 @app.route("/pdf-to-jpg")
