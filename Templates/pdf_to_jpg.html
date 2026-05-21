@@ -1,86 +1,467 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>PDF to JPG Converter</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background-color: #f0f2f5;
-            text-align: center;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 5px;
-        }
-        p {
-            color: #666;
-            margin-bottom: 25px;
-        }
-        input[type="file"] {
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            width: 100%;
-            box-sizing: border-box;
-            background-color: #f9f9f9;
-        }
-        input[type="submit"] {
-            background-color: #dc3545; /* Red for PDF conversion */
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 20px;
-            width: 100%;
-            transition: background-color 0.3s;
-        }
-        input[type="submit"]:hover {
-            background-color: #c82333;
-        }
-        .flash {
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 4px;
-            text-align: left;
-        }
-        .flash.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>📑 PDF to JPG Converter 🖼️</h1>
-        <p>Upload a PDF file. Each page will be converted to a high-quality JPG and downloaded as a ZIP archive.</p>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="flash {{ category }}">{{ message }}</div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
 
-        <form method="POST" enctype="multipart/form-data" action="/pdf-jpg">
-            <input type="file" name="file" accept=".pdf" required>
-            <input type="submit" value="Convert & Download JPG ZIP">
-        </form>
+    <meta charset="utf-8">
+
+    <meta name="viewport"
+    content="width=device-width, initial-scale=1">
+
+    <title>PDF to JPG Converter | MyCVSite</title>
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/x-icon">
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, Helvetica, sans-serif;
+        }
+
+        body{
+
+            min-height:100vh;
+
+            background:
+            linear-gradient(rgba(15,23,42,0.92),
+            rgba(15,23,42,0.92)),
+            url('/static/images/slider5.jpg');
+
+            background-size:cover;
+            background-position:center;
+
+            color:white;
+        }
+
+  
+        /* MAIN */
+
+        .container{
+
+            width:90%;
+            max-width:760px;
+
+            margin:auto;
+
+            padding-top:150px;
+            padding-bottom:50px;
+        }
+
+        .converter-card{
+
+            background:rgba(15,23,42,0.72);
+
+            border:
+            1px solid rgba(255,255,255,0.08);
+
+            backdrop-filter:blur(14px);
+
+            border-radius:28px;
+
+            padding:45px;
+
+            text-align:center;
+
+            box-shadow:
+            0 25px 60px rgba(0,0,0,0.45);
+        }
+
+        .icon{
+
+            width:95px;
+            height:95px;
+
+            margin:auto;
+            margin-bottom:25px;
+
+            border-radius:24px;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+
+            background:
+            rgba(239,68,68,0.12);
+        }
+
+        .icon i{
+
+            font-size:42px;
+
+            color:#ef4444;
+        }
+
+        h1{
+
+            font-size:2.4rem;
+
+            margin-bottom:15px;
+        }
+
+        p{
+
+            color:#cbd5e1;
+
+            line-height:1.8;
+
+            margin-bottom:35px;
+        }
+
+        /* FLASH */
+
+        .flash{
+
+            padding:16px;
+
+            border-radius:14px;
+
+            margin-bottom:25px;
+
+            text-align:left;
+
+            font-size:15px;
+        }
+
+        .flash.error{
+
+            background:
+            rgba(239,68,68,0.12);
+
+            border:
+            1px solid rgba(239,68,68,0.3);
+
+            color:#fecaca;
+        }
+
+        /* FILE INPUT */
+
+        .custom-file-upload{
+
+            width:100%;
+
+            margin-bottom:25px;
+        }
+
+        .file-label{
+
+            width:100%;
+
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:12px;
+
+            padding:20px;
+
+            border-radius:18px;
+
+            background:#1e293b;
+
+            border:
+            2px dashed rgba(56,189,248,0.35);
+
+            color:#cbd5e1;
+
+            cursor:pointer;
+
+            transition:0.3s;
+
+            font-size:15px;
+        }
+
+        .file-label i{
+
+            font-size:22px;
+
+            color:#38bdf8;
+        }
+
+        .file-label:hover{
+
+            border-color:#38bdf8;
+
+            background:#243447;
+
+            transform:translateY(-2px);
+        }
+
+        /* BUTTON */
+
+        .submit-btn{
+
+            width:100%;
+
+            border:none;
+
+            padding:18px;
+
+            border-radius:16px;
+
+            cursor:pointer;
+
+            font-size:1rem;
+            font-weight:bold;
+
+            color:white;
+
+            transition:0.3s;
+
+            background:
+            linear-gradient(135deg,#ef4444,#dc2626);
+
+            box-shadow:
+            0 15px 35px rgba(239,68,68,0.3);
+        }
+
+        .submit-btn:hover{
+            transform:translateY(-3px);
+        }
+
+        /* FEATURES */
+
+        .features{
+
+            display:grid;
+
+            grid-template-columns:
+            repeat(auto-fit,minmax(180px,1fr));
+
+            gap:18px;
+
+            margin-top:35px;
+        }
+
+        .feature{
+
+            background:#1e293b;
+
+            padding:18px;
+
+            border-radius:18px;
+
+            border:
+            1px solid rgba(255,255,255,0.05);
+        }
+
+        .feature i{
+
+            font-size:24px;
+
+            color:#38bdf8;
+
+            margin-bottom:12px;
+        }
+
+        .feature h3{
+
+            font-size:1rem;
+
+            margin-bottom:8px;
+        }
+
+        .feature p{
+
+            margin:0;
+
+            font-size:14px;
+
+            color:#94a3b8;
+        }
+
+        /* MOBILE */
+
+        @media(max-width:768px){
+
+            .nav-container{
+                flex-direction:column;
+                gap:15px;
+            }
+
+            .converter-card{
+                padding:30px;
+            }
+
+            h1{
+                font-size:2rem;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+{% include 'nav.html' %}
+
+    <!-- MAIN -->
+
+    <div class="container">
+
+        <div class="converter-card">
+
+            <!-- ICON -->
+
+            <div class="icon">
+
+                <i class="fa-solid fa-file-image"></i>
+
+            </div>
+
+            <!-- TITLE -->
+
+            <h1>
+                PDF to JPG Converter
+            </h1>
+
+            <p>
+                Upload a PDF file and convert every page
+                into high quality JPG images downloaded
+                in a ZIP archive.
+            </p>
+
+            <!-- FLASH MESSAGES -->
+
+            {% with messages =
+            get_flashed_messages(with_categories=true) %}
+
+              {% if messages %}
+
+                {% for category, message in messages %}
+
+                  <div class="flash {{ category }}">
+
+                    {{ message }}
+
+                  </div>
+
+                {% endfor %}
+
+              {% endif %}
+
+            {% endwith %}
+
+            <!-- FORM -->
+
+            <form method="POST"
+            enctype="multipart/form-data"
+            action="/pdf-jpg">
+
+                <!-- FILE INPUT -->
+
+                <div class="custom-file-upload">
+
+                    <input type="file"
+                    name="file"
+                    id="pdfInput"
+                    accept=".pdf"
+                    required
+                    hidden>
+
+                    <label for="pdfInput"
+                    class="file-label">
+
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                        <span id="fileText">
+                            Choose PDF File
+                        </span>
+
+                    </label>
+
+                </div>
+
+                <!-- BUTTON -->
+
+                <button type="submit"
+                class="submit-btn">
+
+                    <i class="fa-solid fa-file-zipper"></i>
+
+                    Convert & Download ZIP
+
+                </button>
+
+            </form>
+
+            <!-- FEATURES -->
+
+            <div class="features">
+
+                <div class="feature">
+
+                    <i class="fa-solid fa-images"></i>
+
+                    <h3>High Quality</h3>
+
+                    <p>
+                        Convert PDF pages into clear JPG images.
+                    </p>
+
+                </div>
+
+                <div class="feature">
+
+                    <i class="fa-solid fa-file-zipper"></i>
+
+                    <h3>ZIP Download</h3>
+
+                    <p>
+                        All converted images packed in one ZIP.
+                    </p>
+
+                </div>
+
+                <div class="feature">
+
+                    <i class="fa-solid fa-bolt"></i>
+
+                    <h3>Fast Processing</h3>
+
+                    <p>
+                        Quick and efficient PDF conversion.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
+
+<script>
+
+    // SHOW FILE NAME
+
+    const pdfInput =
+    document.getElementById('pdfInput');
+
+    const fileText =
+    document.getElementById('fileText');
+
+    pdfInput.addEventListener('change', function(){
+
+        if(this.files.length > 0){
+
+            fileText.textContent =
+            this.files[0].name;
+
+        }else{
+
+            fileText.textContent =
+            "Choose PDF File";
+
+        }
+
+    });
+
+</script>
+
 </body>
 </html>
