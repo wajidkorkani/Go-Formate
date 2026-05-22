@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>MyCVSite - Smart Online Tools</title>
+
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/x-icon">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
@@ -12,6 +13,7 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 
     <style>
+
         *{
             margin:0;
             padding:0;
@@ -19,14 +21,91 @@
             font-family: Arial, Helvetica, sans-serif;
         }
 
+        html{
+            scroll-behavior:smooth;
+        }
+
         body{
-            background:#0f172a;
+            background:#0b0e18;
             color:white;
             overflow-x:hidden;
         }
 
         /* NAVBAR */
 
+        nav{
+            width:100%;
+            position:fixed;
+            top:0;
+            left:0;
+            z-index:1000;
+            backdrop-filter: blur(12px);
+            background: rgba(250,250,250,0.04);
+            border-bottom:1px solid rgba(255,255,255,0.08);
+        }
+
+        .nav-container{
+            width:90%;
+            margin:auto;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding:18px 0;
+        }
+
+        .logo a{
+            text-decoration:none;
+            color:#0ea5e9;
+            font-size:1.6rem;
+            font-weight:bold;
+        }
+
+        .nav-links{
+            display:flex;
+            align-items:center;
+            gap:25px;
+        }
+
+        .nav-links a{
+            text-decoration:none;
+            color:white;
+            font-size:15px;
+            transition:0.3s;
+        }
+
+        .nav-links a:hover{
+            color:#38bdf8;
+        }
+
+        .generate-btn{
+            background:linear-gradient(135deg,#38bdf8,#0ea5e9) !important;
+            padding:12px 22px !important;
+            border-radius:10px !important;
+            color:white !important;
+            font-weight:bold !important;
+            box-shadow:0 8px 25px rgba(14,165,233,0.35) !important;
+            border:none !important;
+        }
+
+        .generate-btn:hover{
+            background:linear-gradient(135deg,#38bdf8,#38bdf8,#0ea5e9) !important;
+        }
+
+        .menu-toggle{
+            display:none;
+            flex-direction:column;
+            gap:5px;
+            background:none;
+            border:none;
+            cursor:pointer;
+        }
+
+        .bar{
+            width:25px;
+            height:3px;
+            background:white;
+            border-radius:10px;
+        }
 
         /* HERO */
 
@@ -86,7 +165,7 @@
         }
 
         .primary-btn{
-            background:linear-gradient(100deg,#59cdff,#0794d6, skyblue) !important;
+            background:linear-gradient(100deg,#59cdff, rgb(0, 166, 255));
             color:white;
         }
 
@@ -155,7 +234,7 @@
         .tool-card{
             text-decoration:none;
             color:white;
-            background:linear-gradient(145deg,#1e293b,#111827);
+            background-color:#0b0e18;
             padding:35px 28px;
             border-radius:22px;
             transition:0.4s;
@@ -199,11 +278,12 @@
 
         .tool-card h3{
             font-size:1.3rem;
+            color:rgba(255,255,255,0.95);
             margin-bottom:12px;
         }
 
         .tool-card p{
-            color:#cbd5e1;
+            color:#898b8e;
             line-height:1.7;
             margin-bottom:20px;
         }
@@ -236,17 +316,28 @@
 
             .nav-links{
                 position:absolute;
-                top:80px;
+                top:75px;
                 left:0;
                 width:100%;
                 background:#0f172a;
                 flex-direction:column;
+                align-items:flex-start;
                 padding:20px;
                 display:none;
+                gap:20px;
             }
 
-            .nav-links.open{
+            .nav-links.active{
                 display:flex;
+            }
+
+            .nav-links a{
+                width:100%;
+            }
+
+            .generate-btn{
+                width:100%;
+                text-align:center;
             }
 
             .hero-content h1{
@@ -261,7 +352,13 @@
                 width:45px;
                 height:45px;
             }
+
+            .section-title{
+                font-size:2rem;
+            }
+
         }
+
     </style>
 </head>
 
@@ -269,14 +366,47 @@
 
 <!-- NAVBAR -->
 
-{% include 'nav.html' %}
+<nav>
+
+    <div class="nav-container">
+
+        <div class="logo">
+            <a href="/">GoFormate</a>
+        </div>
+
+        <button class="menu-toggle">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        <div class="nav-links">
+
+            <a href="/">Home</a>
+
+            <a href="/qr">QR</a>
+
+            <a href="/form" class="generate-btn">
+                Generate CV
+            </a>
+
+        </div>
+
+    </div>
+
+</nav>
+
+<br><br><br><br>
 
 <!-- HERO SECTION -->
-<br><br><br><br>
+
 <div class="slider">
 
     <div class="hero-content">
-        <h1>Professional Online Tools & CV Generator</h1>
+
+        <h1>
+            Professional Online Tools & CV Generator
+        </h1>
 
         <p>
             Convert files, generate QR codes, create professional CVs,
@@ -284,6 +414,7 @@
         </p>
 
         <div class="hero-buttons">
+
             <a href="/form" class="primary-btn">
                 Create CV
             </a>
@@ -291,7 +422,9 @@
             <a href="#tools" class="secondary-btn">
                 Explore Tools
             </a>
+
         </div>
+
     </div>
 
     <div class="btn">
@@ -371,9 +504,15 @@
     const menuToggle = document.querySelector('.menu-toggle');
     const navLinks = document.querySelector('.nav-links');
 
-    menuToggle.addEventListener('click', () => {
-        navLinks.classList.toggle('open');
-    });
+    if(menuToggle && navLinks){
+
+        menuToggle.addEventListener('click', () => {
+
+            navLinks.classList.toggle('active');
+
+        });
+
+    }
 
     // TOOL CARDS
 
@@ -442,7 +581,8 @@
             text:"Generate CV",
             icon:"fa-solid fa-file-lines",
             description:"Create modern professional CVs in minutes."
-        },
+        }
+
     ];
 
     toolLinks.forEach(tool => {
