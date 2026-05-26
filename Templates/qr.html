@@ -1,548 +1,516 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+    <!-- SEO -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator & Scanner | GoFormate</title>
 
-    <title>QR Code Tool | MyCVSite</title>
+    <meta name="description"
+          content="Generate and scan QR codes instantly with GoFormate. Free, fast and secure QR code generator and QR scanner online.">
 
     <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap"
+          rel="stylesheet">
 
     <link rel="shortcut icon"
-    href="{{ url_for('static', filename='images/logo.png') }}"
-    type="image/x-icon">
-
-    <style>
-
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family:Arial, Helvetica, sans-serif;
-        }
-
-        body{
-            min-height:100vh;
-
-            background:
-            linear-gradient(rgba(15,23,42,0.93),
-            rgba(15,23,42,0.93)),
-            url('/static/images/slider2.jpg');
-
-            background-size:cover;
-            background-position:center;
-
-            color:white;
-        }
-
-        /* MAIN */
-
-        .container{
-            width:90%;
-            max-width:1100px;
-
-            margin:auto;
-
-            padding-top:130px;
-            padding-bottom:60px;
-        }
-
-        .hero{
-            text-align:center;
-            margin-bottom:50px;
-        }
-
-        .hero h1{
-            font-size:3rem;
-            margin-bottom:15px;
-        }
-
-        .hero p{
-            color:#cbd5e1;
-            max-width:700px;
-            margin:auto;
-            line-height:1.8;
-        }
-
-        /* CARD */
-
-        .tool-wrapper{
-            display:grid;
-            grid-template-columns:1fr 1fr;
-            gap:30px;
-        }
-
-        .card{
-            background:rgba(15,23,42,0.72);
-
-            border:1px solid rgba(255,255,255,0.08);
-
-            backdrop-filter:blur(14px);
-
-            border-radius:28px;
-
-            padding:35px;
-
-            box-shadow:0 25px 60px rgba(0,0,0,0.4);
-        }
-
-        .card-title{
-            display:flex;
-            align-items:center;
-            gap:12px;
-
-            margin-bottom:25px;
-
-            font-size:1.3rem;
-            color:#38bdf8;
-        }
-
-        .input-box{
-            width:100%;
-
-            padding:16px 18px;
-
-            border:none;
-            outline:none;
-
-            border-radius:14px;
-
-            background:#1e293b;
-
-            color:white;
-
-            margin-bottom:20px;
-
-            font-size:15px;
-        }
-
-        .input-box::placeholder{
-            color:#94a3b8;
-        }
-
-        .input-box:focus{
-            border:1px solid #38bdf8;
-            box-shadow:0 0 0 4px rgba(56,189,248,0.15);
-        }
-
-        .btn{
-            width:100%;
-
-            border:none;
-
-            padding:16px;
-
-            border-radius:14px;
-
-            cursor:pointer;
-
-            font-size:1rem;
-            font-weight:bold;
-
-            color:white;
-
-            transition:0.3s;
-        }
-
-        .generate{
-            background:linear-gradient(135deg,#10b981,#059669);
-        }
-
-        .scan{
-            background:linear-gradient(135deg,#f59e0b,#d97706);
-        }
-
-        .btn:hover{
-            transform:translateY(-3px);
-        }
-
-        /* QR DISPLAY */
-
-        .qr-display{
-            width:250px;
-            height:250px;
-
-            object-fit:contain;
-
-            margin-top:25px;
-
-            background:white;
-
-            padding:15px;
-
-            border-radius:20px;
-
-            display:none;
-        }
-
-        .download-btn{
-            display:none;
-
-            margin-top:20px;
-
-            text-decoration:none;
-
-            background:#38bdf8;
-
-            color:white;
-
-            padding:14px 24px;
-
-            border-radius:12px;
-
-            font-weight:bold;
-        }
-
-        /* RESULT */
-
-        .file-label{
-
-            width:100%;
-
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            gap:12px;
-
-            padding:20px;
-
-            border-radius:18px;
-
-            background:#1e293b;
-
-            border:
-            2px dashed rgba(56,189,248,0.35);
-
-            color:#cbd5e1;
-
-            cursor:pointer;
-
-            transition:0.3s;
-
-            font-size:15px;
-        }
-
-        .file-label i{
-
-            font-size:22px;
-
-            color:#38bdf8;
-        }
-
-        .file-label:hover{
-
-            border-color:#38bdf8;
-
-            background:#243447;
-
-            transform:translateY(-2px);
-        }
-
-        .scan-result{
-            margin-top:25px;
-
-            background:#1e293b;
-
-            padding:18px;
-
-            border-radius:14px;
-
-            display:none;
-
-            word-break:break-word;
-        }
-
-        .scan-result strong{
-            color:#38bdf8;
-        }
-
-        /* MOBILE */
-
-        @media(max-width:900px){
-
-            .tool-wrapper{
-                grid-template-columns:1fr;
-            }
-
-            .hero h1{
-                font-size:2.2rem;
-            }
-        }
-
-        @media(max-width:768px){
-
-            .nav-container{
-                flex-direction:column;
-                gap:15px;
-            }
-
-            .hero h1{
-                font-size:2rem;
-            }
-
-            .card{
-                padding:25px;
-            }
-        }
-
-    </style>
-
+          href="{{ url_for('static', filename='images/logo.png') }}"
+          type="image/x-icon">
+
+<style>
+:root {
+    --bg-main: #050505;
+    --nav-bg: rgba(15, 15, 15, 0.6);
+    --card-bg: rgba(255, 255, 255, 0.03);
+    --card-border: rgba(255, 255, 255, 0.08);
+    --card-hover: rgba(255,255,255,.05);
+    --text-main: #ffffff;
+    --text-muted: #8892b0;
+    --search-bg: rgba(255,255,255,.03);
+
+    --accent-1:orange; --accent-2:orangered; --accent-3:red;
+}
+
+body.light-mode {
+    --bg-main: #f0f4f8;
+    --nav-bg: rgba(255,255,255,.6);
+    --card-bg: rgba(255,255,255,.7);
+    --card-border: rgba(0,0,0,.08);
+    --card-hover: rgba(255,255,255,.9);
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --search-bg: rgba(255,255,255,.9);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Outfit',sans-serif;
+}
+
+body{
+    background:var(--bg-main);
+    color:var(--text-main);
+    min-height:100vh;
+    overflow-x:hidden;
+    transition:.35s ease;
+}
+
+/* Ambient glow */
+.ambient-glow{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(150px);
+    z-index:-1;
+    opacity:.35;
+}
+
+.glow-1{
+    top:-10%;
+    left:-10%;
+    width:45vw;
+    height:45vw;
+    background:rgba(0,242,254,.15);
+}
+
+.glow-2{
+    bottom:-10%;
+    right:-10%;
+    width:55vw;
+    height:55vw;
+    background:rgba(240,147,251,.15);
+}
+
+/* Layout */
+.workspace{
+    max-width:1300px;
+    margin:0 auto;
+    padding:20px 20px 80px;
+}
+
+/* NAVBAR - same as index */
+.glass-nav{
+    position:sticky;
+    top:20px;
+    z-index:100;
+    background:var(--nav-bg);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    border:1px solid var(--card-border);
+    border-radius:50px;
+    padding:15px 30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:50px;
+}
+
+.nav-brand{
+    font-size:1.5rem;
+    font-weight:800;
+    background:linear-gradient(to right,var(--accent-1),var(--accent-3));
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    text-decoration:none;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.nav-controls{
+    display:flex;
+    align-items:center;
+    gap:20px;
+}
+
+.nav-link{
+    color:var(--text-main);
+    text-decoration:none;
+    font-weight:500;
+    opacity:.85;
+}
+
+.nav-link:hover{
+    color:var(--accent-1);
+}
+
+.theme-toggle{
+    background:none;
+    border:none;
+    color:var(--text-main);
+    font-size:1.2rem;
+    cursor:pointer;
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:var(--card-bg);
+    border:1px solid var(--card-border);
+}
+
+.btn-premium{
+    background:linear-gradient(135deg,var(--accent-2),var(--accent-3));
+    padding:10px 24px;
+    border-radius:30px;
+    font-weight:600;
+    color:#fff;
+    text-decoration:none;
+}
+
+/* Hero */
+.hero{
+    text-align:center;
+    margin-bottom:55px;
+}
+
+.hero h1{
+    font-size:3rem;
+    margin-bottom:15px;
+}
+
+.hero p{
+    color:var(--text-muted);
+    max-width:720px;
+    margin:auto;
+    line-height:1.8;
+}
+
+/* Grid */
+.tool-wrapper{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:25px;
+}
+
+/* Cards */
+.card{
+    background:var(--card-bg);
+    border:1px solid var(--card-border);
+    border-radius:28px;
+    padding:32px;
+    backdrop-filter:blur(14px);
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-4px);
+    background:var(--card-hover);
+}
+
+.card-title{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-size:1.35rem;
+    margin-bottom:25px;
+}
+
+.card-title i{
+    color:var(--accent-1);
+}
+
+/* Inputs */
+.input-box{
+    width:100%;
+    padding:16px 18px;
+    border:none;
+    outline:none;
+    border-radius:16px;
+    background:var(--search-bg);
+    border:1px solid var(--card-border);
+    color:var(--text-main);
+    margin-bottom:20px;
+}
+
+.btn{
+    width:100%;
+    border:none;
+    padding:16px;
+    border-radius:16px;
+    cursor:pointer;
+    font-size:1rem;
+    font-weight:600;
+    color:white;
+    transition:.3s;
+}
+
+.generate{
+    background:linear-gradient(135deg,var(--accent-2),var(--accent-3));
+}
+
+.scan{
+    background:linear-gradient(135deg,var(--accent-1),var(--accent-2));
+}
+
+.btn:hover{
+    transform:translateY(-2px);
+}
+
+/* QR Preview */
+.qr-display{
+    width:240px;
+    height:240px;
+    object-fit:contain;
+    margin-top:25px;
+    background:white;
+    padding:15px;
+    border-radius:20px;
+    display:none;
+}
+
+.download-btn{
+    display:none;
+    margin-top:18px;
+    text-decoration:none;
+    background:linear-gradient(135deg,var(--accent-2),var(--accent-3));
+    color:white;
+    padding:14px 24px;
+    border-radius:14px;
+    font-weight:600;
+}
+
+/* Upload */
+.file-label{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    padding:20px;
+    border-radius:18px;
+    border:2px dashed rgba(79,172,254,.25);
+    cursor:pointer;
+    color:var(--text-muted);
+}
+
+.file-label:hover{
+    border-color:var(--accent-1);
+}
+
+.scan-result{
+    margin-top:20px;
+    background:rgba(255,255,255,.03);
+    padding:20px;
+    border-radius:16px;
+    display:none;
+    word-break:break-word;
+}
+
+/* Responsive */
+@media(max-width:900px){
+    .tool-wrapper{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:650px){
+    .glass-nav{
+        padding:15px;
+        border-radius:20px;
+        flex-direction:column;
+        gap:15px;
+    }
+
+    .nav-controls{
+        flex-wrap:wrap;
+        justify-content:center;
+    }
+
+    .hero h1{
+        font-size:2rem;
+    }
+
+    .card{
+        padding:24px;
+    }
+}
+</style>
 </head>
 
 <body>
 
-{% include 'nav.html' %}
+<div class="ambient-glow glow-1"></div>
+<div class="ambient-glow glow-2"></div>
 
-<div class="container">
+<div class="workspace">
 
-    <!-- HERO -->
+    <nav class="glass-nav">
+        <a href="/" class="nav-brand">
+            <i class="fa-solid fa-shapes"></i> GoFormate
+        </a>
+
+        <div class="nav-controls">
+            <a href="/" class="nav-link">Home</a>
+
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fa-solid fa-sun" id="themeIcon"></i>
+            </button>
+
+            <a href="/form" class="btn-premium">Build CV ✨</a>
+        </div>
+    </nav>
 
     <div class="hero">
-
-        <h1>
-            Smart QR Code Tool
-        </h1>
-
+        <h1>QR Code Generator & Scanner</h1>
         <p>
-            Generate stylish QR codes instantly or scan existing QR
-            code images directly from your device.
+            Generate QR codes instantly or scan QR code images directly from your device —
+            fast, secure and free with GoFormate.
         </p>
-
     </div>
-
-    <!-- TOOLS -->
 
     <div class="tool-wrapper">
 
-        <!-- GENERATE QR -->
-
         <div class="card">
-
             <div class="card-title">
                 <i class="fa-solid fa-qrcode"></i>
                 Generate QR Code
             </div>
 
             <form id="generateForm">
-
                 <input type="text"
-                class="input-box"
-                id="qrText"
-                placeholder="Enter URL or Text..."
-                required>
+                       class="input-box"
+                       id="qrText"
+                       placeholder="Enter URL or text..."
+                       required>
 
-                <button type="submit"
-                class="btn generate">
-
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <button type="submit" class="btn generate">
                     Generate QR
-
                 </button>
-
             </form>
 
             <div style="text-align:center;">
-
-                <img id="generatedImage"
-                class="qr-display"
-                alt="QR Code">
+                <img id="generatedImage" class="qr-display">
 
                 <br>
 
                 <a id="downloadLink"
-                class="download-btn"
-                download="qr_code.png">
-
-                    <i class="fa-solid fa-download"></i>
-                    Download QR
-
+                   class="download-btn"
+                   download="qr_code.png">
+                   Download QR
                 </a>
-
             </div>
-
         </div>
 
-        <!-- SCAN QR -->
-
         <div class="card">
-
             <div class="card-title">
                 <i class="fa-solid fa-camera"></i>
                 Scan QR Code
             </div>
 
-            <form id="scanForm"
-            enctype="multipart/form-data">
+            <form id="scanForm" enctype="multipart/form-data">
 
                 <input type="file"
-                id="qrFile"
-                name="qr_image"
-                accept="image/*"
-                required
-                hidden>
+                       id="qrFile"
+                       name="qr_image"
+                       accept="image/*"
+                       hidden
+                       required>
 
-                <label for="qrFile"
-                class="file-label">
-
+                <label for="qrFile" class="file-label">
                     <i class="fa-solid fa-cloud-arrow-up"></i>
-
-                    <span id="fileText">
-                        Choose QR Image
-                    </span>
-
+                    <span id="fileText">Choose QR Image</span>
                 </label>
 
                 <br><br>
 
-                <button type="submit"
-                class="btn scan">
-
-                    <i class="fa-solid fa-expand"></i>
+                <button type="submit" class="btn scan">
                     Scan QR
-
                 </button>
-
             </form>
 
-            <div id="scanResult"
-            class="scan-result"></div>
-
+            <div id="scanResult" class="scan-result"></div>
         </div>
 
     </div>
-
 </div>
 
 <script>
+// theme
+const themeToggleBtn = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
 
-    // GENERATE QR
+if(localStorage.getItem('theme') === 'light'){
+    document.body.classList.add('light-mode');
+    themeIcon.classList.replace('fa-sun','fa-moon');
+}
 
-    document.getElementById('generateForm')
-    .addEventListener('submit', async function(e){
+themeToggleBtn.addEventListener('click',()=>{
+    document.body.classList.toggle('light-mode');
 
-        e.preventDefault();
+    if(document.body.classList.contains('light-mode')){
+        themeIcon.classList.replace('fa-sun','fa-moon');
+        localStorage.setItem('theme','light');
+    } else{
+        themeIcon.classList.replace('fa-moon','fa-sun');
+        localStorage.setItem('theme','dark');
+    }
+});
 
-        const text =
-        document.getElementById('qrText').value;
+// generate QR
+document.getElementById('generateForm')
+.addEventListener('submit', async function(e){
+    e.preventDefault();
 
-        const formData = new FormData();
+    const text = document.getElementById('qrText').value;
+    const formData = new FormData();
+    formData.append('data', text);
 
-        formData.append('data', text);
+    const img = document.getElementById('generatedImage');
+    const downloadLink = document.getElementById('downloadLink');
 
-        const img =
-        document.getElementById('generatedImage');
-
-        const downloadLink =
-        document.getElementById('downloadLink');
-
-        try{
-
-            const response = await fetch('/generate', {
-
-                method:'POST',
-                body:formData
-
-            });
-
-            if(response.ok){
-
-                const blob =
-                await response.blob();
-
-                const url =
-                URL.createObjectURL(blob);
-
-                img.src = url;
-
-                img.style.display = 'block';
-
-                downloadLink.href = url;
-
-                downloadLink.download =
-                `qrcode_${Date.now()}.png`;
-
-                downloadLink.style.display =
-                'inline-block';
-            }
-
-        }catch(error){
-
-            console.log(error);
-
-        }
-
+    const response = await fetch('/generate',{
+        method:'POST',
+        body:formData
     });
 
-    // SHOW FILE NAME
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
 
-    document.getElementById('qrFile')
-    .addEventListener('change', function(){
+    img.src = url;
+    img.style.display='block';
 
-        const fileName =
+    downloadLink.href=url;
+    downloadLink.style.display='inline-block';
+});
+
+// filename
+document.getElementById('qrFile')
+.addEventListener('change', function(){
+    document.getElementById('fileText').innerText =
         this.files[0]?.name || 'Choose QR Image';
+});
 
-        document.getElementById('fileText')
-        .innerText = fileName;
+// scan
+document.getElementById('scanForm')
+.addEventListener('submit', async function(e){
+    e.preventDefault();
 
-    });
-
-    // SCAN QR
-
-    document.getElementById('scanForm')
-    .addEventListener('submit', async function(e){
-
-        e.preventDefault();
-
-        const fileInput =
+    const fileInput =
         document.getElementById('qrFile');
 
-        if(!fileInput.files.length){
-            return;
-        }
+    if(!fileInput.files.length) return;
 
-        const formData =
-        new FormData();
+    const formData = new FormData();
+    formData.append('qr_image', fileInput.files[0]);
 
-        formData.append(
-            'qr_image',
-            fileInput.files[0]
-        );
-
-        const resultDiv =
+    const resultDiv =
         document.getElementById('scanResult');
 
-        resultDiv.style.display = 'block';
+    resultDiv.style.display='block';
+    resultDiv.innerHTML="<strong>Scanning...</strong>";
 
-        resultDiv.innerHTML =
-        "<strong>Scanning...</strong>";
-
-        try{
-
-            const response =
-            await fetch('/scan', {
-
-                method:'POST',
-                body:formData
-
-            });
-
-            const text =
-            await response.text();
-
-            resultDiv.innerHTML =
-            `<strong>Result:</strong><br>${text}`;
-
-        }catch(error){
-
-            resultDiv.innerHTML =
-            "Error occurred during scanning.";
-
-        }
-
+    const response = await fetch('/scan',{
+        method:'POST',
+        body:formData
     });
 
+    const text = await response.text();
+
+    resultDiv.innerHTML =
+        `<strong>Result:</strong><br>${text}`;
+});
 </script>
 
 </body>
