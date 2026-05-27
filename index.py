@@ -29,6 +29,15 @@ import json
 import fitz
 import tempfile
 from flask import after_this_request
+import os
+import uuid
+import json
+import zipfile
+import tempfile
+import threading
+from flask import Flask, request, send_file
+from werkzeug.utils import secure_filename
+import io
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_for_flash'
@@ -1075,6 +1084,183 @@ def scan_qr():
 
     except Exception as e:
         return f"Error processing image: {str(e)}", 500
+
+
+
+
+def convert_docx_to_pdf(input_path, output_dir):
+    """
+    Converts DOCX → PDF using Microsoft Word (COM automation).
+    Requires MS Word installed (Windows only).
+    """
+
+    abs_input_path = os.path.abspath(input_path)
+
+    base_name = os.path.basename(input_path)
+    filename_no_ext = os.path.splitext(base_name)[0]
+    abs_output_path = os.path.abspath(
+        os.path.join(output_dir, f"{filename_no_ext}.pdf")
+    )
+
+    pythoncom.CoInitialize()
+
+    word = None
+    doc = None
+
+    try:
+        word = comtypes.client.CreateObject("Word.Application")
+        word.Visible = False
+        word.DisplayAlerts = 0
+
+        doc = word.Documents.Open(abs_input_path)
+
+        # 17 = wdFormatPDF
+        doc.SaveAs(abs_output_path, FileFormat=17)
+
+        return abs_output_path
+
+    except Exception as e:
+        raise Exception(f"Word conversion error: {e}")
+
+    finally:
+        if doc:
+            doc.Close(False)
+        if word:
+            word.Quit()
+
+        pythoncom.CoUninitialize()
+
+
+@app.route('/docx-to-pdf', methods=['GET', 'POST'])
+def docx_to_pdf():
+    if request.method == 'POST':
+        file = request.files.get('file')
+
+        if not file or file.filename == '':
+            return "No file selected", 400
+
+        if file.filename.lower().endswith('.docx'):
+
+            unique_id = str(uuid.uuid4())
+            input_path = os.path.join(
+                UPLOAD_FOLDER,
+                f"{unique_id}.docx"
+            )
+
+            output_path = os.path.join(
+                OUTPUT_FOLDER,
+                f"{unique_id}.pdf"
+            )
+
+            file.save(input_path)
+
+            try:
+                pdf_path = convert_docx_to_pdf(input_path, OUTPUT_FOLDER)
+
+                return send_file(
+                    pdf_path,
+                    as_attachment=True,
+                    download_name='converted.pdf',
+                    mimetype='application/pdf'
+                )
+
+            except Exception as e:
+                return f"Conversion error: {e}", 500
+
+            finally:
+                if os.path.exists(input_path):
+                    os.remove(input_path)
+
+    return render('docx_to_pdf.html')
+
+
+
+
+# ---------------- DELETE TEMP FILE ----------------
+def delete_file(path, delay=60):
+    def remove():
+        try:
+            if os.path.exists(path):
+                os.remove(path)
+        except:
+            pass
+
+    threading.Timer(delay, remove).start()
+
+
+# ---------------- PDF COMPRESSION ----------------
+def compress_pdf(file_path):
+    doc = fitz.open(file_path)
+
+    for page in doc:
+        for img in page.get_images(full=True):
+            xref = img[0]
+            base = doc.extract_image(xref)
+            img_bytes = base["image"]
+
+            image = Image.open(io.BytesIO(img_bytes))
+
+            if image.mode != "RGB":
+                image = image.convert("RGB")
+
+            image.thumbnail((1200, 1200))
+
+            buf = io.BytesIO()
+            image.save(buf, format="JPEG", quality=40)
+
+            doc.update_stream(xref, buf.getvalue())
+
+    out = io.BytesIO()
+    doc.save(out, garbage=4, deflate=True, clean=True)
+    doc.close()
+    out.seek(0)
+    return out
+
+
+# ---------------- JSON COMPRESSION ----------------
+def compress_json(file_path):
+    with open(file_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    compressed = json.dumps(data, separators=(",", ":"))
+
+    return io.BytesIO(compressed.encode("utf-8"))
+
+
+# ---------------- ROUTE ----------------
+@app.route("/compress", methods=["POST"])
+def compress():
+    file = request.files["file"]
+    filename = secure_filename(file.filename)
+    ext = filename.split(".")[-1].lower()
+
+    temp_path = os.path.join(tempfile.gettempdir(), f"{uuid.uuid4()}_{filename}")
+    file.save(temp_path)
+
+    delete_file(temp_path, 60)
+
+    if ext == "pdf":
+        output = compress_pdf(temp_path)
+        return send_file(output, as_attachment=True, download_name="compressed.pdf")
+
+    elif ext == "json":
+        output = compress_json(temp_path)
+        return send_file(output, as_attachment=True, download_name="compressed.json")
+
+    else:
+        return "Unsupported file type"
+
+@app.route('/compress-pdf')
+def CompressPDF():
+    return render("compress_pdf.html")
+
+@app.route('/compress-json')
+def CompressJSON():
+    return render("compress_json.html")
+
+@app.route('/compress-img')
+def CompressImage():
+    return render("compress_img.html")
 
 
 
