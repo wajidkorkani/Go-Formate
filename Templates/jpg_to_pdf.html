@@ -1,259 +1,228 @@
 <!doctype html>
 <html lang="en">
 <head>
-
     <meta charset="utf-8">
-
-    <meta name="viewport"
-    content="width=device-width, initial-scale=1">
-
-    <title>JPG to PDF Converter | MyCVSite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JPG to PDF Converter Online Free | GoFormate</title>
 
     <link rel="stylesheet"
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/x-icon">
 
+<meta name="title" content="JPG to PDF Converter Online Free | GoFormate">
+<meta name="description" content="Convert JPG images to PDF online for free with GoFormate. Merge one or multiple JPG files into a high-quality PDF instantly, fast and secure.">
+<meta name="keywords" content="jpg to pdf, image to pdf, jpeg to pdf, convert jpg to pdf online, merge jpg to pdf, free jpg to pdf converter, goformate">
+<meta name="author" content="GoFormate">
+<meta name="robots" content="index, follow">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://goformate.com/jpg-to-pdf">
+<meta property="og:title" content="JPG to PDF Converter Online Free | GoFormate">
+<meta property="og:description" content="Convert JPG or JPEG images into PDF online for free with GoFormate. Fast, secure, and easy to use.">
+<meta property="og:image" content="{{ url_for('static', filename='images/logo.png') }}">
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "JPG to PDF Converter - GoFormate",
+  "url": "https://goformate.com/jpg-to-pdf",
+  "applicationCategory": "DocumentConverter",
+  "operatingSystem": "Any",
+  "description": "Convert JPG images to PDF online for free using GoFormate."
+}
+</script>
+
+
     <style>
+        :root{
+            --bg-main:#050505;
+            --nav-bg:rgba(15,15,15,.6);
+            --card-bg:rgba(255,255,255,.03);
+            --card-border:rgba(255,255,255,.08);
+            --text-main:#fff;
+            --text-muted:#8892b0;
+            --accent-1:orange;
+            --accent-2:orangered;
+            --accent-3:red;
+        }
+
+        body.light-mode{
+            --bg-main:#f0f4f8;
+            --nav-bg:rgba(255,255,255,.7);
+            --card-bg:rgba(255,255,255,.8);
+            --card-border:rgba(0,0,0,.08);
+            --text-main:#0f172a;
+            --text-muted:#475569;
+        }
 
         *{
             margin:0;
             padding:0;
             box-sizing:border-box;
-            font-family:Arial, Helvetica, sans-serif;
+            font-family:'Outfit',sans-serif;
         }
 
         body{
-
+            background:var(--bg-main);
+            color:var(--text-main);
             min-height:100vh;
-
-            background:
-            linear-gradient(rgba(15,23,42,0.92),
-            rgba(15,23,42,0.92)),
-            url('/static/images/slider4.jpg');
-
-            background-size:cover;
-            background-position:center;
-
-            color:white;
+            transition:.35s ease;
         }
 
-        /* MAIN */
+        /* Ambient glow */
+        .ambient-glow{
+            position:fixed;
+            border-radius:50%;
+            filter:blur(150px);
+            z-index:-1;
+            opacity:.35;
+        }
+
+        .glow-1{
+            top:-10%;
+            left:-10%;
+            width:45vw;
+            height:45vw;
+            background:rgba(0,242,254,.15);
+        }
+
+        .glow-2{
+            bottom:-20%;
+            right:-10%;
+            width:55vw;
+            height:55vw;
+            background:rgba(240,147,251,.15);
+        }
 
         .container{
-
             width:90%;
-            max-width:720px;
-
+            max-width:800px;
             margin:auto;
-
-            padding-top:150px;
+            padding:40px 20px 80px;
         }
 
         .converter-card{
-
-            background:rgba(15,23,42,0.72);
-
-            border:
-            1px solid rgba(255,255,255,0.08);
-
-            backdrop-filter:blur(14px);
-
+            background:var(--card-bg);
+            border:1px solid var(--card-border);
+            backdrop-filter:blur(18px);
             border-radius:28px;
-
             padding:45px;
-
             text-align:center;
-
-            box-shadow:
-            0 25px 60px rgba(0,0,0,0.45);
+            box-shadow:0 15px 50px rgba(0,0,0,.25);
         }
 
         .icon{
-
             width:95px;
             height:95px;
-
             margin:auto;
             margin-bottom:25px;
-
             border-radius:24px;
-
             display:flex;
             align-items:center;
             justify-content:center;
-
-            background:
-            rgba(56,189,248,0.12);
+            background:rgba(0,242,254,0.1);
         }
 
         .icon i{
-
             font-size:42px;
-
-            color:#38bdf8;
+            color:var(--accent-1);
         }
 
         h1{
-
-            font-size:2.4rem;
-
-            margin-bottom:15px;
+            font-size:2.5rem;
+            margin-bottom:14px;
         }
 
         p{
-
-            color:#cbd5e1;
-
+            color:var(--text-muted);
             line-height:1.8;
-
-            margin-bottom:35px;
+            margin-bottom:30px;
         }
 
-        /* FILE INPUT */
-
         .custom-file-upload{
-
             width:100%;
-
             margin-bottom:25px;
         }
 
         .file-label{
-
-            width:100%;
-
             display:flex;
             align-items:center;
             justify-content:center;
             gap:12px;
-
             padding:20px;
-
             border-radius:18px;
-
-            background:#1e293b;
-
-            border:
-            2px dashed rgba(56,189,248,0.35);
-
-            color:#cbd5e1;
-
+            border:2px dashed var(--accent-1);
             cursor:pointer;
-
-            transition:0.3s;
-
-            font-size:15px;
-        }
-
-        .file-label i{
-
-            font-size:22px;
-
-            color:#38bdf8;
+            transition:.3s;
+            margin-bottom:25px;
+            color:var(--text-muted);
         }
 
         .file-label:hover{
-
-            border-color:#38bdf8;
-
-            background:#243447;
-
+            background:var(--card-bg);
             transform:translateY(-2px);
         }
 
-        /* BUTTON */
+        .file-label i{
+            font-size:22px;
+            color:var(--accent-1);
+        }
 
         .submit-btn{
-
             width:100%;
-
             border:none;
-
             padding:18px;
-
             border-radius:16px;
-
             cursor:pointer;
-
             font-size:1rem;
             font-weight:bold;
-
             color:white;
-
-            transition:0.3s;
-
-            background:
-            linear-gradient(135deg,#ef4444,#dc2626);
-
-            box-shadow:
-            0 15px 35px rgba(239,68,68,0.3);
+            background:linear-gradient(135deg,var(--accent-2),var(--accent-3));
+            transition:.3s;
         }
 
         .submit-btn:hover{
             transform:translateY(-3px);
         }
 
-        /* FEATURES */
-
         .features{
-
             display:grid;
-            grid-template-columns:
-            repeat(auto-fit,minmax(180px,1fr));
-
+            grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
             gap:18px;
-
             margin-top:35px;
         }
 
         .feature{
-
-            background:#1e293b;
-
+            background:var(--card-bg);
             padding:18px;
-
             border-radius:18px;
-
-            border:
-            1px solid rgba(255,255,255,0.05);
+            border:1px solid var(--card-border);
         }
 
         .feature i{
-
             font-size:24px;
-
-            color:#38bdf8;
-
+            color:var(--accent-1);
             margin-bottom:12px;
         }
 
         .feature h3{
-
             font-size:1rem;
-
             margin-bottom:8px;
         }
 
         .feature p{
-
             margin:0;
-
             font-size:14px;
-
-            color:#94a3b8;
+            color:var(--text-muted);
         }
 
-        /* MOBILE */
-
         @media(max-width:768px){
-
-            .nav-container{
-                flex-direction:column;
-                gap:15px;
-            }
-
             .converter-card{
-                padding:30px;
+                padding:28px;
             }
 
             h1{
@@ -261,157 +230,203 @@
             }
         }
 
-    </style>
+                /* Navigation Styles */
+        .glass-nav { position:sticky; top:20px; z-index:100; background:var(--nav-bg); backdrop-filter:blur(20px); border:1px solid var(--card-border); border-radius:50px; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; margin-bottom:50px; width: 90%;}
+        .nav-brand { font-size:1.5rem; font-weight:800; background:linear-gradient(to right,var(--accent-1),var(--accent-3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-decoration:none; display:flex; align-items:center; gap:10px; }
+        .nav-controls { display:flex; align-items:center; gap:18px; }
+        .nav-link { color:var(--text-main); text-decoration:none; font-weight:500; transition:.25s; }
+        .nav-link:hover { color:var(--accent-1); }
+        .btn-premium { background:linear-gradient(135deg,var(--accent-2),var(--accent-3)); padding:10px 22px; border-radius:30px; color:#fff; text-decoration:none; font-weight:600; border:none; }
+        .theme-toggle { background:var(--card-bg); border:1px solid var(--card-border); color:var(--text-main); width:42px; height:42px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.3s; }
+        .theme-toggle:hover { color:var(--accent-1); }
 
+    </style>
 </head>
 
 <body>
 
-    <!-- NAVBAR -->
+<div class="ambient-glow glow-1"></div>
+<div class="ambient-glow glow-2"></div>
 
-{% include 'nav.html' %}
-    <!-- MAIN -->
+<div class="navDiv">
+    <nav class="glass-nav">
+        <a href="/" class="nav-brand"><i class="fa-solid fa-shapes"></i> GoFormate</a>
+        <div class="nav-controls">
+            <a href="/" class="nav-link">Home</a>
+            <button class="theme-toggle" id="themeToggle"><i class="fa-solid fa-sun" id="themeIcon"></i></button>
+            <a href="/form" class="btn-premium">Build CV ✨</a>
+        </div>
+    </nav>
+</div>
 
-    <div class="container">
+<div class="container">
 
-        <div class="converter-card">
+    <div class="converter-card">
 
-            <!-- ICON -->
+        <div class="icon">
+            <i class="fa-solid fa-image"></i>
+        </div>
 
-            <div class="icon">
+        <h1>JPG to PDF Converter</h1>
 
-                <i class="fa-solid fa-file-pdf"></i>
+        <p>
+            Upload JPG or JPEG images and instantly convert them
+            into high-quality PDF files in seconds.
+        </p>
+
+        <form method="POST"
+        enctype="multipart/form-data"
+        action="/jpgtopdf">
+
+            <div class="custom-file-upload">
+
+                <input type="file"
+                name="file"
+                id="imageInput"
+                accept=".jpg,.jpeg"
+                required
+                hidden>
+
+                <label for="imageInput" class="file-label">
+
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                    <span id="fileText">
+                        Choose JPG Image
+                    </span>
+
+                </label>
 
             </div>
 
-            <!-- TITLE -->
+            <button type="submit" class="submit-btn">
+                <i class="fa-solid fa-file-pdf"></i>
+                Convert Now
+            </button>
 
-            <h1>
-                JPG to PDF Converter
-            </h1>
+        </form>
 
-            <p>
-                Upload JPG or JPEG images and instantly
-                convert them into professional PDF files
-                with high quality output.
-            </p>
+        <div class="features">
 
-            <!-- FORM -->
+            <div class="feature">
+                <i class="fa-solid fa-file-pdf"></i>
+                <h3>PDF Export</h3>
+                <p>Convert JPG images into PDF instantly.</p>
+            </div>
 
-            <form method="POST"
-            enctype="multipart/form-data"
-            action="jpgtopdf">
+            <div class="feature">
+                <i class="fa-solid fa-bolt"></i>
+                <h3>Fast</h3>
+                <p>Quick conversion with no waiting.</p>
+            </div>
 
-                <!-- FILE INPUT -->
-
-                <div class="custom-file-upload">
-
-                    <input type="file"
-                    name="file"
-                    id="imageInput"
-                    accept=".jpg,.jpeg"
-                    required
-                    hidden>
-
-                    <label for="imageInput"
-                    class="file-label">
-
-                        <i class="fa-solid fa-cloud-arrow-up"></i>
-
-                        <span id="fileText">
-                            Choose JPG Image
-                        </span>
-
-                    </label>
-
-                </div>
-
-                <!-- BUTTON -->
-
-                <button type="submit"
-                class="submit-btn">
-
-                    <i class="fa-solid fa-file-arrow-down"></i>
-
-                    Convert & Download PDF
-
-                </button>
-
-            </form>
-
-            <!-- FEATURES -->
-
-            <div class="features">
-
-                <div class="feature">
-
-                    <i class="fa-solid fa-bolt"></i>
-
-                    <h3>Fast Conversion</h3>
-
-                    <p>
-                        Convert images to PDF instantly.
-                    </p>
-
-                </div>
-
-                <div class="feature">
-
-                    <i class="fa-solid fa-shield"></i>
-
-                    <h3>Secure Files</h3>
-
-                    <p>
-                        Your uploaded files stay private.
-                    </p>
-
-                </div>
-
-                <div class="feature">
-
-                    <i class="fa-solid fa-medal"></i>
-
-                    <h3>High Quality</h3>
-
-                    <p>
-                        Preserve image quality in PDF.
-                    </p>
-
-                </div>
-
+            <div class="feature">
+                <i class="fa-solid fa-shield"></i>
+                <h3>Secure</h3>
+                <p>Your uploaded files stay private.</p>
             </div>
 
         </div>
 
     </div>
 
+</div>
+
+
+<style>
+
+/* PAGE LOADER */
+#pageLoader{
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--bg-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    transition: opacity .6s ease, visibility .6s ease;
+}
+
+#pageLoader.hide{
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader-box{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:18px;
+}
+
+.loader-icon{
+    font-size: 8rem;
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: spinPulse 1.6s infinite ease-in-out;
+}
+
+.loader-box p{
+    color: var(--text-muted);
+    font-size: 1rem;
+    letter-spacing: .5px;
+}
+
+@keyframes spinPulse{
+    0%{
+        transform: rotate(0deg) scale(1);
+        opacity:.7;
+    }
+    50%{
+        transform: rotate(180deg) scale(1.25);
+        opacity:1;
+    }
+    100%{
+        transform: rotate(360deg) scale(1);
+        opacity:.7;
+    }
+}
+
+</style>
+
+<div id="pageLoader">
+    <div class="loader-box">
+        <i class="fa-solid fa-shapes loader-icon"></i>
+    </div>
+</div>
+
 <script>
 
-    // SHOW FILE NAME
+/* PAGE LOADER */
+window.addEventListener("load", () => {
+    const loader = document.getElementById("pageLoader");
 
-    const imageInput =
-    document.getElementById('imageInput');
-
-    const fileText =
-    document.getElementById('fileText');
-
-    imageInput.addEventListener('change', function(){
-
-        if(this.files.length > 0){
-
-            fileText.textContent =
-            this.files[0].name;
-
-        }else{
-
-            fileText.textContent =
-            "Choose JPG Image";
-
-        }
-
-    });
+    setTimeout(() => {
+        loader.classList.add("hide");
+    }, 800);
+});
 
 </script>
 
+<script>
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    if(localStorage.getItem('theme') === 'light'){ document.body.classList.add('light-mode'); themeIcon.classList.replace('fa-sun','fa-moon'); }
+    themeToggleBtn.addEventListener('click',()=>{
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        themeIcon.classList.replace(isLight ? 'fa-sun' : 'fa-moon', isLight ? 'fa-moon' : 'fa-sun');
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    });
+
+    const pptInput = document.getElementById('pptInput');
+    const fileText = document.getElementById('fileText');
+    pptInput.addEventListener('change', function(){
+        fileText.textContent = this.files.length > 0 ? this.files[0].name : "Choose PPT or PPTX File";
+    });
+</script>
 </body>
 </html>
