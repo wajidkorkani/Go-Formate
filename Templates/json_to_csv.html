@@ -1,303 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- SEO Meta Tags -->
+<title>JSON to CSV Converter Online Free | GoFormate</title>
 
-    <meta name="viewport"
-    content="width=device-width, initial-scale=1.0">
+<meta name="title" content="JSON to CSV Converter Online Free | GoFormate">
 
-    <title>JSON to CSV Converter | MyCVSite</title>
+<meta name="description" content="Convert JSON files to CSV format online for free with GoFormate. Quickly transform JSON data into structured CSV files instantly. Fast, secure, and easy to use.">
 
-    <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-<link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/x-icon">
+<meta name="keywords" content="
+json to csv, convert json to csv, json converter online, csv converter, json to csv tool, free json converter,
+goformate, go format, goformat, formate, formative, goformative
+">
+
+<meta name="author" content="GoFormate">
+<meta name="robots" content="index, follow">
+
+<link rel="canonical" href="https://goformate.com/json-to-csv">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://goformate.com/json-to-csv">
+<meta property="og:title" content="JSON to CSV Converter Online Free | GoFormate">
+<meta property="og:description" content="Convert JSON files into CSV format online for free with GoFormate. Fast, secure and simple tool.">
+<meta property="og:image" content="https://goformate.com/static/images/logo.png">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="JSON to CSV Converter Online Free | GoFormate">
+<meta name="twitter:description" content="Convert JSON to CSV online for free with GoFormate. Fast and easy tool.">
+<meta name="twitter:image" content="https://goformate.com/static/images/logo.png">
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "JSON to CSV Converter - GoFormate",
+  "url": "https://goformate.com/json-to-csv",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any",
+  "description": "Convert JSON files into CSV format online for free using GoFormate."
+}
+</script>    
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 
     <style>
-
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family:Arial, Helvetica, sans-serif;
+        :root {
+            --bg-main:#050505; --nav-bg:rgba(15,15,15,.6); --card-bg:rgba(255,255,255,.03);
+            --card-border:rgba(255,255,255,.08); --text-main:#ffffff; --text-muted:#8892b0;
+            --accent-1:orange; --accent-2:orangered; --accent-3:red;
+        }
+        body.light-mode {
+            --bg-main:#f0f4f8; --nav-bg:rgba(255,255,255,.7); --card-bg:rgba(255,255,255,.8);
+            --card-border:rgba(0,0,0,.08); --text-main:#0f172a; --text-muted:#475569;
         }
 
-        body{
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Outfit',sans-serif; }
+        body { background:var(--bg-main); color:var(--text-main); min-height:100vh; transition:.35s ease; }
 
-            min-height:100vh;
+        /* Ambient Glows */
+        .ambient-glow { position:fixed; border-radius:50%; filter:blur(150px); z-index:-1; opacity:.35; }
+        .glow-1 { top:-10%; left:-10%; width:45vw; height:45vw; background:rgba(0,242,254,.15); }
+        .glow-2 { bottom:-20%; right:-10%; width:55vw; height:55vw; background:rgba(240,147,251,.15); }
 
-            background:
-            linear-gradient(rgba(15,23,42,0.92),
-            rgba(15,23,42,0.92)),
-            url('/static/images/slider5.jpg');
+        .workspace { max-width:800px; margin:auto; padding:20px 20px 80px; }
 
-            background-size:cover;
-            background-position:center;
+        /* Navigation Styles */
+        .glass-nav { position:sticky; top:20px; z-index:100; background:var(--nav-bg); backdrop-filter:blur(20px); border:1px solid var(--card-border); border-radius:50px; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; margin-bottom:50px; width: 90%;}
+        .nav-brand { font-size:1.5rem; font-weight:800; background:linear-gradient(to right,var(--accent-1),var(--accent-3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-decoration:none; display:flex; align-items:center; gap:10px; }
+        .nav-controls { display:flex; align-items:center; gap:18px; }
+        .nav-link { color:var(--text-main); text-decoration:none; font-weight:500; transition:.25s; }
+        .nav-link:hover { color:var(--accent-1); }
+        .btn-premium { background:linear-gradient(135deg,var(--accent-2),var(--accent-3)); padding:10px 22px; border-radius:30px; color:#fff; text-decoration:none; font-weight:600; border:none; }
+        .theme-toggle { background:var(--card-bg); border:1px solid var(--card-border); color:var(--text-main); width:42px; height:42px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.3s; }
+        .theme-toggle:hover { color:var(--accent-1); }
 
-            color:white;
+        
+
+        /* Converter Card */
+        .converter-card { background:var(--card-bg); border:1px solid var(--card-border); backdrop-filter:blur(18px); border-radius:28px; padding:45px; text-align:center; box-shadow:0 15px 50px rgba(0,0,0,.25); }
+        .icon { width:95px; height:95px; margin:auto; margin-bottom:25px; border-radius:24px; display:flex; align-items:center; justify-content:center; background:rgba(0,242,254,0.1); color:var(--accent-1); font-size:42px; }
+        .file-label { display:flex; align-items:center; justify-content:center; gap:12px; padding:20px; border-radius:18px; border:2px dashed var(--accent-1); cursor:pointer; transition:0.3s; margin-bottom:25px; color:var(--text-muted); }
+        .file-label:hover { background:var(--card-bg); transform:translateY(-2px); }
+        .submit-btn { width:100%; border:none; padding:18px; border-radius:16px; cursor:pointer; font-size:1rem; font-weight:bold; color:white; background:linear-gradient(135deg,var(--accent-2),var(--accent-3)); transition:0.3s; }
+        .submit-btn:hover { transform:translateY(-3px); }
+        .features { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:18px; margin-top:35px; }
+        .feature { background:var(--card-bg); padding:18px; border-radius:18px; border:1px solid var(--card-border); }
+        .feature i { color:var(--accent-1); margin-bottom:12px; }
+        .navDiv{
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
         }
-
-
-        /* PAGE WRAPPER */
-
-        .wrapper{
-
-            min-height:100vh;
-
-            display:flex;
-            justify-content:center;
-            align-items:center;
-
-            padding-top:90px;
-        }
-
-        /* CARD */
-
-        .card{
-
-            width:100%;
-            max-width:450px;
-
-            background:rgba(15,23,42,0.75);
-
-            border:1px solid rgba(255,255,255,0.08);
-
-            backdrop-filter:blur(14px);
-
-            border-radius:28px;
-
-            padding:40px;
-
-            text-align:center;
-
-            box-shadow:0 25px 60px rgba(0,0,0,0.45);
-        }
-
-        .icon{
-
-            width:85px;
-            height:85px;
-
-            margin:auto;
-            margin-bottom:20px;
-
-            border-radius:22px;
-
-            display:flex;
-            align-items:center;
-            justify-content:center;
-
-            background:rgba(34,197,94,0.12);
-        }
-
-        .icon i{
-
-            font-size:38px;
-            color:#22c55e;
-        }
-
-        h1{
-
-            font-size:1.8rem;
-
-            margin-bottom:20px;
-        }
-
-        .error{
-
-            background:rgba(239,68,68,0.15);
-
-            color:#fecaca;
-
-            padding:12px;
-
-            border-radius:12px;
-
-            margin-bottom:15px;
-
-            font-size:14px;
-        }
-
-        p.desc{
-
-            font-size:13px;
-
-            color:#cbd5e1;
-
-            margin-bottom:20px;
-        }
-
-        /* FILE INPUT */
-
-        .file-box{
-            margin-bottom:20px;
-        }
-
-        .file-label{
-
-            width:100%;
-
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            gap:12px;
-
-            padding:20px;
-
-            border-radius:18px;
-
-            background:#1e293b;
-
-            border:2px dashed rgba(34,197,94,0.35);
-
-            color:#cbd5e1;
-
-            cursor:pointer;
-
-            transition:0.3s;
-        }
-
-        .file-label:hover{
-
-            background:#243447;
-
-            border-color:#22c55e;
-
-            transform:translateY(-2px);
-        }
-
-        .file-label i{
-            color:#22c55e;
-        }
-
-        button{
-
-            width:100%;
-
-            padding:16px;
-
-            border:none;
-
-            border-radius:16px;
-
-            cursor:pointer;
-
-            font-size:1rem;
-
-            font-weight:bold;
-
-            color:white;
-
-            background:linear-gradient(135deg,#22c55e,#16a34a);
-
-            box-shadow:0 15px 35px rgba(34,197,94,0.3);
-
-            transition:0.3s;
-        }
-
-        button:hover{
-            transform:translateY(-3px);
-        }
-
-        .note{
-
-            font-size:12px;
-
-            color:#94a3b8;
-
-            margin-top:15px;
-        }
-
-        /* RESPONSIVE */
-
-        @media(max-width:768px){
-
-            .nav-container{
-                flex-direction:column;
-                gap:10px;
-            }
-
-        }
-
     </style>
-
 </head>
-
 <body>
 
-<!-- NAVBAR -->
-{% include 'nav.html' %}
-<!-- PAGE -->
-<div class="wrapper">
+<div class="ambient-glow glow-1"></div>
+<div class="ambient-glow glow-2"></div>
 
-    <div class="card">
-
-        <div class="icon">
-            <i class="fa-solid fa-file-csv"></i>
+<div class="navDiv">
+    <nav class="glass-nav">
+        <a href="/" class="nav-brand"><i class="fa-solid fa-shapes"></i> GoFormate</a>
+        <div class="nav-controls">
+            <a href="/" class="nav-link">Home</a>
+            <button class="theme-toggle" id="themeToggle"><i class="fa-solid fa-sun" id="themeIcon"></i></button>
+            <a href="/form" class="btn-premium">Build CV ✨</a>
         </div>
+    </nav>
+</div>
 
+<div class="workspace">
+    <!-- Fixed Nav -->
+
+    <div class="converter-card">
+        <div class="icon"><i class="fa-solid fa-file-csv"></i></div>
         <h1>JSON to CSV Converter</h1>
+        <p>Convert JSON data into structured CSV format online for free with GoFormate.
+Upload your JSON file and download clean CSV instantly. No signup required.</p>
+<br><br>
 
-        <p class="desc">
-            Upload a JSON file and convert it into CSV format instantly.
-        </p>
-
-        {% if error %}
-            <div class="error">{{ error }}</div>
-        {% endif %}
-
-        <form method="POST" enctype="multipart/form-data">
-
-            <div class="file-box">
-
-                <input type="file"
-                id="jsonInput"
-                name="file"
-                accept=".json"
-                hidden required>
-
-                <label for="jsonInput" class="file-label">
-
-                    <i class="fa-solid fa-cloud-arrow-up"></i>
-
-                    <span id="fileText">Choose JSON File</span>
-
-                </label>
-
-            </div>
-
-            <button type="submit">
-                Convert & Download CSV
-            </button>
-
+        <form action="/json-to-csv" method="POST" enctype="multipart/form-data">
+            <input type="file" name="file" id="pptInput" accept=".json" required hidden>
+            <label for="pptInput" class="file-label" id="fileLabel">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span id="fileText">Choose JSON File</span>
+            </label>
+            <button type="submit" class="submit-btn"><i class="fa-solid fa-file-pdf"></i> Convert Now</button>
         </form>
 
-        <div class="note">
+        <div class="features">
+            <div class="note">
             Only valid JSON arrays are supported.
         </div>
-
+        </div>
     </div>
+</div>
 
+
+<style>
+
+/* PAGE LOADER */
+#pageLoader{
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--bg-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    transition: opacity .6s ease, visibility .6s ease;
+}
+
+#pageLoader.hide{
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader-box{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:18px;
+}
+
+.loader-icon{
+    font-size: 8rem;
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: spinPulse 1.6s infinite ease-in-out;
+}
+
+.loader-box p{
+    color: var(--text-muted);
+    font-size: 1rem;
+    letter-spacing: .5px;
+}
+
+@keyframes spinPulse{
+    0%{
+        transform: rotate(0deg) scale(1);
+        opacity:.7;
+    }
+    50%{
+        transform: rotate(180deg) scale(1.25);
+        opacity:1;
+    }
+    100%{
+        transform: rotate(360deg) scale(1);
+        opacity:.7;
+    }
+}
+
+</style>
+
+<div id="pageLoader">
+    <div class="loader-box">
+        <i class="fa-solid fa-shapes loader-icon"></i>
+        <p>Loading GoFormate...</p>
+    </div>
 </div>
 
 <script>
 
-    const jsonInput =
-    document.getElementById('jsonInput');
+/* PAGE LOADER */
+window.addEventListener("load", () => {
+    const loader = document.getElementById("pageLoader");
 
-    const fileText =
-    document.getElementById('fileText');
-
-    jsonInput.addEventListener('change', function(){
-
-        fileText.textContent =
-        this.files.length
-        ? this.files[0].name
-        : "Choose JSON File";
-
-    });
+    setTimeout(() => {
+        loader.classList.add("hide");
+    }, 800);
+});
 
 </script>
 
+
+<script>
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    if(localStorage.getItem('theme') === 'light'){ document.body.classList.add('light-mode'); themeIcon.classList.replace('fa-sun','fa-moon'); }
+    themeToggleBtn.addEventListener('click',()=>{
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        themeIcon.classList.replace(isLight ? 'fa-sun' : 'fa-moon', isLight ? 'fa-moon' : 'fa-sun');
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    });
+
+    const pptInput = document.getElementById('pptInput');
+    const fileText = document.getElementById('fileText');
+    pptInput.addEventListener('change', function(){
+        fileText.textContent = this.files.length > 0 ? this.files[0].name : "Choose JSON";
+    });
+</script>
 </body>
 </html>
