@@ -2,349 +2,430 @@
 <html lang="en">
 <head>
 
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-    content="width=device-width, initial-scale=1.0">
-
-    <title>PDF to DOCX Converter | MyCVSite</title>
-
-    <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-<link rel="shortcut icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/x-icon">
-
-    <style>
-
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family:Arial, Helvetica, sans-serif;
-        }
-
-        body{
-
-            min-height:100vh;
-
-            background:
-            linear-gradient(rgba(15,23,42,0.92),
-            rgba(15,23,42,0.92)),
-            url('/static/images/slider4.jpg');
-
-            background-size:cover;
-            background-position:center;
-
-            color:white;
-
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            padding:20px;
-        }
-
-        /* CARD */
-
-        .container{
-
-            width:100%;
-            max-width:650px;
-
-            background:rgba(15,23,42,0.75);
-
-            border:1px solid rgba(255,255,255,0.08);
-
-            backdrop-filter:blur(14px);
-
-            border-radius:28px;
-
-            padding:40px;
-
-            box-shadow:0 25px 60px rgba(0,0,0,0.45);
-        }
-
-        .top-bar{
-
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-
-            margin-bottom:20px;
-        }
-
-        .title{
-
-            font-size:1.8rem;
-            font-weight:bold;
-
-            display:flex;
-            align-items:center;
-            gap:10px;
-        }
-
-        .title i{
-            color:#6366f1;
-        }
-
-        .back{
-
-            text-decoration:none;
-
-            color:#a5b4fc;
-
-            font-size:14px;
-
-            transition:0.3s;
-        }
-
-        .back:hover{
-            color:#ffffff;
-        }
-
-        p.desc{
-
-            color:#cbd5e1;
-
-            line-height:1.7;
-
-            margin-bottom:25px;
-        }
-
-        /* FLASH */
-
-        .flash{
-
-            padding:14px;
-
-            border-radius:12px;
-
-            margin-bottom:15px;
-
-            font-size:14px;
-        }
-
-        .flash.error{
-            background:rgba(239,68,68,0.15);
-            color:#fecaca;
-        }
-
-        .flash.success{
-            background:rgba(34,197,94,0.15);
-            color:#bbf7d0;
-        }
-
-        /* FILE INPUT */
-
-        .file-box{
-
-            margin-bottom:25px;
-        }
-
-        .file-label{
-
-            width:100%;
-
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            gap:12px;
-
-            padding:20px;
-
-            border-radius:18px;
-
-            background:#1e293b;
-
-            border:2px dashed rgba(99,102,241,0.4);
-
-            color:#cbd5e1;
-
-            cursor:pointer;
-
-            transition:0.3s;
-        }
-
-        .file-label:hover{
-
-            background:#243447;
-
-            border-color:#6366f1;
-
-            transform:translateY(-2px);
-        }
-
-        .file-label i{
-            color:#6366f1;
-            font-size:20px;
-        }
-
-        /* BUTTON */
-
-        .btn{
-
-            width:100%;
-
-            padding:16px;
-
-            border:none;
-
-            border-radius:16px;
-
-            cursor:pointer;
-
-            font-size:1rem;
-
-            font-weight:bold;
-
-            color:white;
-
-            background:linear-gradient(135deg,#6366f1,#4f46e5);
-
-            transition:0.3s;
-
-            box-shadow:0 15px 35px rgba(99,102,241,0.3);
-        }
-
-        .btn:hover{
-            transform:translateY(-3px);
-        }
-
-        /* NOTE */
-
-        .note{
-
-            font-size:12px;
-
-            color:#94a3b8;
-
-            text-align:center;
-
-            margin-top:18px;
-        }
-
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>PDF to DOCX | GoFormate</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<link rel="shortcut icon"
+href="{{ url_for('static', filename='images/logo.png') }}">
+
+<style>
+
+/* =========================
+   THEME SYSTEM (GLOBAL)
+========================= */
+:root{
+    --bg-main:#050505;
+    --nav-bg:rgba(15,15,15,.6);
+    --card-bg:rgba(255,255,255,.03);
+    --card-border:rgba(255,255,255,.08);
+    --text-main:#ffffff;
+    --text-muted:#8892b0;
+
+    --accent-1:orange; --accent-2:orangered; --accent-3:red;
+}
+
+body.light-mode{
+    --bg-main:#f0f4f8;
+    --nav-bg:rgba(255,255,255,.6);
+    --card-bg:rgba(255,255,255,.8);
+    --card-border:rgba(0,0,0,.08);
+    --text-main:#0f172a;
+    --text-muted:#475569;
+}
+
+/* RESET */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Outfit',sans-serif;
+}
+
+body{
+    background:var(--bg-main);
+    color:var(--text-main);
+    min-height:100vh;
+    overflow-x:hidden;
+    transition:.35s ease;
+}
+
+/* GLOW */
+.glow{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(160px);
+    z-index:-1;
+    opacity:.35;
+}
+
+.glow-1{
+    width:50vw;
+    height:50vw;
+    top:-10%;
+    left:-10%;
+    background:rgba(0,242,254,.15);
+}
+
+.glow-2{
+    width:60vw;
+    height:60vw;
+    bottom:-20%;
+    right:-10%;
+    background:rgba(240,147,251,.15);
+}
+
+/* CONTAINER */
+.workspace{
+    max-width:1300px;
+    margin:auto;
+    padding:20px;
+}
+
+/* NAV (same system) */
+.nav{
+    position:sticky;
+    top:20px;
+    z-index:100;
+    background:var(--nav-bg);
+    backdrop-filter:blur(20px);
+    border:1px solid var(--card-border);
+    border-radius:50px;
+    padding:15px 30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:50px;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    text-decoration:none;
+    font-weight:800;
+    font-size:1.4rem;
+    background:linear-gradient(to right,var(--accent-1),var(--accent-3));
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.nav-right{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+
+.nav-right a{
+    color:var(--text-main);
+    text-decoration:none;
+    font-weight:500;
+}
+
+.toggle{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    border:1px solid var(--card-border);
+    background:var(--card-bg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    color:var(--text-main);
+}
+
+/* HERO */
+.hero{
+    text-align:center;
+    margin-bottom:40px;
+}
+
+.hero h1{
+    font-size:3rem;
+}
+
+.hero p{
+    color:var(--text-muted);
+    max-width:700px;
+    margin:10px auto 0;
+}
+
+/* CARD */
+.card{
+    max-width:700px;
+    margin:auto;
+    background:var(--card-bg);
+    border:1px solid var(--card-border);
+    border-radius:28px;
+    padding:40px;
+    text-align:center;
+    backdrop-filter:blur(18px);
+}
+
+/* ICON */
+.icon{
+    width:90px;
+    height:90px;
+    margin:auto;
+    margin-bottom:25px;
+    border-radius:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(99,102,241,.15);
+}
+
+.icon i{
+    font-size:40px;
+    color:var(--accent-1);
+}
+
+/* FILE INPUT */
+.file-label{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    padding:20px;
+    border-radius:18px;
+    border:2px dashed rgba(99,102,241,.4);
+    cursor:pointer;
+    transition:.3s;
+    background:rgba(255,255,255,.03);
+}
+
+.file-label:hover{
+    border-color:#6366f1;
+    transform:translateY(-2px);
+}
+
+input[type="file"]{
+    display:none;
+}
+
+/* BUTTON */
+.btn{
+    width:100%;
+    margin-top:20px;
+    padding:18px;
+    border:none;
+    border-radius:16px;
+    font-weight:700;
+    color:white;
+    cursor:pointer;
+    background:linear-gradient(var(--accent-1), var(--accent-2), var(--accent-3));
+}
+
+/* NOTE */
+.note{
+    margin-top:15px;
+    font-size:12px;
+    color:var(--text-muted);
+}
+
+/* FLASH */
+.flash{
+    padding:12px;
+    border-radius:12px;
+    margin-bottom:10px;
+}
+.flash.error{background:rgba(239,68,68,.15);color:#fecaca;}
+.flash.success{background:rgba(34,197,94,.15);color:#bbf7d0;}
+
+
+.btn-premium{
+    background:linear-gradient(135deg,var(--accent-2),var(--accent-3));
+    padding:10px 22px;
+    border-radius:30px;
+    color:#fff;
+    text-decoration:none;
+    font-weight:600;
+    border:none;
+}
+</style>
 
 </head>
 
 <body>
 
-    {% include 'nav.html' %}
+<!-- GLOWS -->
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
 
-    <div class="container">
+<div class="workspace">
 
-        <!-- HEADER -->
+<!-- NAV -->
+<nav class="nav">
+    <a href="/" class="brand"><i class="fa-solid fa-shapes">  </i>GoFormate</a>
 
-        <div class="top-bar">
+    <div class="nav-right">
+        <a href="/">Home</a>
 
-            <div class="title">
+        <button class="toggle" id="themeToggle">
+            <i class="fa-solid fa-sun" id="themeIcon"></i>
+        </button>
 
-                <i class="fa-solid fa-file-word"></i>
-
-                PDF to DOCX
-
-            </div>
-
-            <a href="{{ url_for('home') }}"
-            class="back">
-
-                ← Back to Tools
-
-            </a>
-
-        </div>
-
-        <!-- DESCRIPTION -->
-
-        <p class="desc">
-            Upload a PDF file and convert it into an editable Word
-            document (DOCX) while preserving structure as much as possible.
-        </p>
-
-        <!-- FLASH -->
-
-        {% with messages =
-        get_flashed_messages(with_categories=true) %}
-
-          {% if messages %}
-
-            {% for category, message in messages %}
-
-              <div class="flash {{ category }}">
-
-                {{ message }}
-
-              </div>
-
-            {% endfor %}
-
-          {% endif %}
-
-        {% endwith %}
-
-        <!-- FORM -->
-
-        <form method="POST"
-        enctype="multipart/form-data">
-
-            <div class="file-box">
-
-                <input type="file"
-                id="pdfInput"
-                name="file"
-                accept=".pdf"
-                required
-                hidden>
-
-                <label for="pdfInput"
-                class="file-label">
-
-                    <i class="fa-solid fa-cloud-arrow-up"></i>
-
-                    <span id="fileText">
-                        Choose PDF File
-                    </span>
-
-                </label>
-
-            </div>
-
-            <button type="submit"
-            class="btn">
-
-                Convert & Download DOCX
-
-            </button>
-
-        </form>
-
-        <div class="note">
-            Conversion quality depends on PDF structure complexity.
-        </div>
-
+        <a href="/form" class="btn-premium">Build CV ✨</a>
     </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+    <h1>PDF to DOCX Converter</h1>
+    <p>Convert PDFs into editable Word documents with clean structure preservation.</p>
+</div>
+
+<!-- CARD -->
+<div class="card">
+
+    <div class="icon">
+        <i class="fa-solid fa-file-word"></i>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <form method="POST" enctype="multipart/form-data">
+
+        <label class="file-label">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span id="fileText">Choose PDF File</span>
+            <input type="file" id="fileInput" name="file" accept=".pdf">
+        </label>
+
+        <button class="btn">Convert & Download</button>
+
+    </form>
+
+    <div class="note">
+        Accuracy depends on PDF structure complexity.
+    </div>
+
+</div>
+
+</div>
+
+
+<style>
+
+/* PAGE LOADER */
+#pageLoader{
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--bg-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    transition: opacity .6s ease, visibility .6s ease;
+}
+
+#pageLoader.hide{
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader-box{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:18px;
+}
+
+.loader-icon{
+    font-size: 8rem;
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: spinPulse 1.6s infinite ease-in-out;
+}
+
+.loader-box p{
+    color: var(--text-muted);
+    font-size: 1rem;
+    letter-spacing: .5px;
+}
+
+@keyframes spinPulse{
+    0%{
+        transform: rotate(0deg) scale(1);
+        opacity:.7;
+    }
+    50%{
+        transform: rotate(180deg) scale(1.25);
+        opacity:1;
+    }
+    100%{
+        transform: rotate(360deg) scale(1);
+        opacity:.7;
+    }
+}
+
+</style>
+
+<div id="pageLoader">
+    <div class="loader-box">
+        <i class="fa-solid fa-shapes loader-icon"></i>
+        <p>Loading GoFormate...</p>
+    </div>
+</div>
 
 <script>
 
-    const pdfInput =
-    document.getElementById('pdfInput');
+/* PAGE LOADER */
+window.addEventListener("load", () => {
+    const loader = document.getElementById("pageLoader");
 
-    const fileText =
-    document.getElementById('fileText');
+    setTimeout(() => {
+        loader.classList.add("hide");
+    }, 800);
+});
 
-    pdfInput.addEventListener('change', function(){
+</script>
 
-        if(this.files.length > 0){
 
-            fileText.textContent =
-            this.files[0].name;
+<script>
 
-        }else{
+/* THEME */
+const btn=document.getElementById('themeToggle');
+const icon=document.getElementById('themeIcon');
 
-            fileText.textContent =
-            "Choose PDF File";
+if(localStorage.getItem('theme')==='light'){
+    document.body.classList.add('light-mode');
+    icon.classList.replace('fa-sun','fa-moon');
+}
 
-        }
+btn.addEventListener('click',()=>{
+    document.body.classList.toggle('light-mode');
 
-    });
+    if(document.body.classList.contains('light-mode')){
+        icon.classList.replace('fa-sun','fa-moon');
+        localStorage.setItem('theme','light');
+    }else{
+        icon.classList.replace('fa-moon','fa-sun');
+        localStorage.setItem('theme','dark');
+    }
+});
+
+/* FILE NAME */
+const input=document.getElementById('fileInput');
+const text=document.getElementById('fileText');
+
+input.addEventListener('change',()=>{
+    text.textContent=input.files[0]?.name || "Choose PDF File";
+});
 
 </script>
 
